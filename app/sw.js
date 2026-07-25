@@ -10,12 +10,13 @@
    que instalaram.
    ========================================================================== */
 
-const VERSAO = 'atleta-v1';
+const VERSAO = 'atleta-v2';
 
 const CASCA = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './css/estilo.css',
   './js/motor-regras.js',
   './js/base-regras.js',
   './js/armazenamento.js',

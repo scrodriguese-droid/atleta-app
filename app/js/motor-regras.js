@@ -258,6 +258,7 @@
           fonte: regra.fonte,
           revisadoEm: regra.revisadoEm,
           suprime: regra.suprime || [],
+          suprimeCategorias: regra.suprimeCategorias || [],
           trace: (regra.requer || []).map(function (c) {
             let v = ler(estado, c);
             if (v && typeof v === 'object' && 'v' in v) v = v.v;
@@ -267,21 +268,34 @@
       }
     });
 
-    // Supressão: regra específica cala a genérica.
-    const aSuprimir = {};
+    // Supressão. Dois níveis:
+    //   suprime           — regra específica cala outra regra pelo id.
+    //   suprimeCategorias  — uma condição de saúde cala uma CATEGORIA inteira
+    //                        (ex: doença renal silencia toda orientação de
+    //                        proteína) e no lugar deixa o card de encaminhamento.
+    // Regras da categoria 'condicao' nunca são caladas por gate de categoria —
+    // são elas que gatilham o bloqueio e carregam o encaminhamento.
+    const aSuprimir = {};   // id  -> id do supressor
+    const gates = {};       // categoria -> id da condição que a bloqueou
     disparadas.forEach(function (d) {
       d.suprime.forEach(function (id) { aSuprimir[id] = d.id; });
+      d.suprimeCategorias.forEach(function (cat) { gates[cat] = d.id; });
     });
 
     const ativas = [], suprimidas = [];
     disparadas.forEach(function (d) {
-      if (aSuprimir[d.id]) suprimidas.push(Object.assign({ suprimidaPor: aSuprimir[d.id] }, d));
-      else ativas.push(d);
+      const porId = aSuprimir[d.id];
+      const porCat = (d.categoria !== 'condicao' && gates[d.categoria] !== d.id) ? gates[d.categoria] : null;
+      if (porId || porCat) {
+        suprimidas.push(Object.assign({ suprimidaPor: porId || porCat }, d));
+      } else {
+        ativas.push(d);
+      }
     });
 
     ativas.sort(function (a, b) { return b.peso - a.peso; });
 
-    return { ativas: ativas, suprimidas: suprimidas, semDados: semDados, erros: carga.erros };
+    return { ativas: ativas, suprimidas: suprimidas, semDados: semDados, erros: carga.erros, gates: gates };
   }
 
   function renderizar(conteudo, estado) {
@@ -305,16 +319,20 @@
     const max = opcoes.max || 4;
     const r = avaliar(estado, opcoes);
 
-    const porCategoria = {}, escolhidas = [];
+    // Uma regra por categoria (a mais grave) — exceto 'condicao': cada
+    // condição de saúde é um aviso de segurança e entra sempre, no topo.
+    const porCategoria = {}, escolhidas = [], condicoes = [];
     r.ativas.forEach(function (a) {
+      if (a.categoria === 'condicao') { condicoes.push(a); return; }
       if (porCategoria[a.categoria]) return;   // já ordenado por peso
       porCategoria[a.categoria] = true;
       escolhidas.push(a);
     });
 
+    const teto = Math.max(max, condicoes.length);
     return {
-      cards: escolhidas.slice(0, max),
-      naoMostradas: escolhidas.slice(max),
+      cards: condicoes.concat(escolhidas).slice(0, teto),
+      naoMostradas: escolhidas.slice(Math.max(0, max - condicoes.length)),
       pedidosDeDado: r.semDados.filter(function (s) { return s.pedido; }),
       auditoria: r
     };

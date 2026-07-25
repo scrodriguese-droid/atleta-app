@@ -490,6 +490,180 @@ var BASE_REGRAS = [
   },
   fonte: 'IOC Consensus RED-S 2018',
   revisadoEm: '2026-07'
+},
+
+/* ═══════════════════ PERFIL FISIOLÓGICO (personaliza limiares) ══════════ */
+{
+  id: 'ferro-mulher-menstruada',
+  categoria: 'micronutriente',
+  severidade: 'serio',
+  prioridade: 92,
+  requer: ['exames.ferritina'],
+  quando: e => e.perfil && e.perfil.sexo === 'feminino' &&
+               ['regular','irregular'].indexOf(e.perfil.menstruacao) !== -1 &&
+               e.exames.ferritina.v < 40,
+  suprime: ['ferritina-baixa-endurance', 'ferritina-limitrofe', 'ferro-combinacao'],
+  conteudo: {
+    titulo: 'Ferritina em {{exames.ferritina.v}} ng/mL — atenção redobrada pela perda menstrual',
+    mecanismo: 'A menstruação é uma perda mensal e recorrente de ferro. Somada à hemólise de impacto da corrida, ao suor e ao microssangramento intestinal, ela torna a deficiência de ferro muito mais provável em mulheres que menstruam — e desloca a interpretação: a referência laboratorial geral foi construída sobre população mista e subestima o seu risco.',
+    noTreino: 'A consequência é a mesma — transporte de oxigênio limitado, fadiga precoce, FC mais alta no mesmo pace — mas você chega lá mais rápido e com menos margem. Por isso o alvo para endurance (acima de 40 ng/mL) importa ainda mais no seu caso.',
+    correcao: 'Ferro heme com vitamina C nas refeições, café só uma hora depois, e ferro pela manhã (a hepcidina fecha a absorção após treino intenso). Reavaliar em 90 dias — a trajetória diz mais que o valor isolado.',
+    encaminhar: 'Ferritina baixa em mulher que menstrua, sobretudo com fluxo intenso, pede avaliação médica — e, se o fluxo for volumoso, também investigação ginecológica. Não suplemente ferro por conta própria.'
+  },
+  fonte: 'ACSM/AND/DC 2016; Sim et al., Eur J Appl Physiol 2019 — revisão sobre ferro em atletas mulheres',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'proteina-masters',
+  categoria: 'proteina',
+  severidade: 'atencao',
+  prioridade: 47,
+  requer: ['hoje.proteinaUltimaRefeicao', 'atleta.pesoKg'],
+  quando: e => e.perfil && e.perfil.idade >= 60 &&
+               e.hoje.proteinaUltimaRefeicao < 0.4 * e.atleta.pesoKg,
+  suprime: ['proteina-dose-refeicao'],
+  conteudo: {
+    titulo: 'Dose de proteína desta refeição pode não bastar na sua idade',
+    noTreino: 'Com o avançar da idade surge a "resistência anabólica": o músculo responde menos ao mesmo estímulo de proteína. O limiar por refeição sobe de ~0,3 para cerca de 0,4 g/kg — abaixo disso, a síntese proteica não dispara com a mesma eficiência, e o reparo entre sessões fica incompleto.',
+    correcao: 'Mire cerca de 0,4 g/kg por refeição, com fontes ricas em leucina (laticínios, ovos, carnes, whey). Distribuir em quatro refeições rende mais que concentrar no jantar.'
+  },
+  fonte: 'Moore et al., J Gerontol A Biol Sci 2015; ISSN Position Stand 2017',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'triade-atleta-feminina',
+  categoria: 'energia',
+  severidade: 'critico',
+  prioridade: 96,
+  requer: ['semana.ea'],
+  quando: e => e.perfil && e.perfil.sexo === 'feminino' &&
+               ['irregular','ausente'].indexOf(e.perfil.menstruacao) !== -1 &&
+               e.semana.ea < 45,
+  suprime: ['ea-atencao'],
+  conteudo: {
+    titulo: 'Ciclo alterado + energia disponível em {{semana.ea}} — sinal da tríade da atleta',
+    mecanismo: 'Irregularidade ou ausência de menstruação combinada com baixa disponibilidade energética é a assinatura da tríade da atleta feminina (parte do RED-S): baixa EA → disfunção menstrual → perda de densidade óssea. A alteração do ciclo não é "efeito do treino puxado" — é um sinal de que o corpo cortou funções por falta de combustível.',
+    noTreino: 'Além da queda de desempenho e adaptação, o risco concreto é ósseo: menor densidade e mais fraturas por estresse. É um dos poucos sinais que pedem ação sem esperar para ver.',
+    correcao: 'Aumentar a oferta de energia — principalmente carboidrato — em todas as refeições. Nenhum ajuste de treino corrige isto, porque a causa não está no treino.',
+    encaminhar: 'Alteração menstrual associada a baixa energia disponível merece avaliação com médica(o) do esporte e ginecologista, e acompanhamento nutricional. Não é caso de esperar.'
+  },
+  fonte: 'IOC Consensus RED-S 2018 (atualizado 2023); Mountjoy et al.; De Souza et al., Female Athlete Triad Coalition',
+  revisadoEm: '2026-07'
+},
+
+/* ═══════════ CONDIÇÕES DE SAÚDE (bloqueiam categoria + encaminham) ═══════ */
+/* Estas regras NÃO prescrevem para a doença. Elas silenciam a orientação que
+   ficaria perigosa diante da condição e deixam no lugar o encaminhamento. */
+{
+  id: 'cond-doenca-renal',
+  categoria: 'condicao',
+  severidade: 'serio',
+  prioridade: 90,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('doenca_renal') !== -1,
+  suprimeCategorias: ['proteina', 'hidratacao'],
+  conteudo: {
+    titulo: 'Doença renal informada — silenciei proteína e sódio',
+    noTreino: 'As recomendações padrão deste app para atleta — proteína alta (1,6–2,0 g/kg) e reposição generosa de sódio no suor — podem ser prejudiciais na doença renal, onde proteína, sódio e potássio precisam de controle individual. Por isso não mostro essas metas para você.',
+    encaminhar: 'A sua meta de proteína e de eletrólitos deve ser definida pela(o) nefrologista e por nutricionista, considerando o seu estágio de função renal. Leve a eles a sua rotina de treino e suor.'
+  },
+  fonte: 'Regra de segurança: silencia orientação que exige manejo clínico (referência: manejo nutricional em DRC). Não substitui avaliação médica.',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'cond-diabetes',
+  categoria: 'condicao',
+  severidade: 'serio',
+  prioridade: 88,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('diabetes') !== -1,
+  suprimeCategorias: ['carboidrato'],
+  conteudo: {
+    titulo: 'Diabetes informado — metas de carboidrato exigem seu manejo',
+    noTreino: 'As metas de carboidrato periodizado e a ingestão durante o exercício interagem diretamente com insulina e outros medicamentos — dose e timing errados podem causar hipo ou hiperglicemia. Por isso não mostro metas fixas de carboidrato para você; a lógica de combustível precisa ser individualizada com quem ajusta a sua medicação.',
+    encaminhar: 'Converse com endocrinologista e nutricionista esportivo sobre carboidrato peri-treino, ajuste de insulina para exercício e monitorização de glicemia nos treinos longos.'
+  },
+  fonte: 'Regra de segurança: carboidrato peri-treino interage com terapia glicêmica. Não substitui avaliação médica.',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'cond-hipertensao',
+  categoria: 'condicao',
+  severidade: 'atencao',
+  prioridade: 80,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('hipertensao') !== -1,
+  suprimeCategorias: ['hidratacao'],
+  conteudo: {
+    titulo: 'Hipertensão informada — segurei a orientação de sódio',
+    noTreino: 'A recomendação de repor sódio generosamente no suor faz sentido para performance, mas pode conflitar com o controle da pressão arterial. Como o balanço é individual, não mostro metas de sódio para você — elas precisam considerar a sua pressão e a sua medicação.',
+    encaminhar: 'Ajuste a estratégia de sódio e hidratação com a(o) médica(o) que acompanha sua pressão, sobretudo para provas longas em calor.'
+  },
+  fonte: 'Regra de segurança: reposição de sódio pode conflitar com controle pressórico. Não substitui avaliação médica.',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'cond-dii',
+  categoria: 'condicao',
+  severidade: 'serio',
+  prioridade: 84,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('dii') !== -1,
+  suprimeCategorias: ['intestino'],
+  conteudo: {
+    titulo: 'Doença inflamatória intestinal informada — silenciei o "treino do intestino"',
+    noTreino: 'O protocolo de aumentar fibra e treinar a absorção de carboidrato assume um intestino saudável. Na doença inflamatória intestinal (Crohn, retocolite), fibra e certas estratégias podem piorar sintomas, sobretudo em atividade da doença. Por isso não mostro essa orientação de intestino para você.',
+    encaminhar: 'Estratégias de fibra, carboidrato durante o exercício e manejo de sintomas gastrointestinais devem ser desenhadas com gastroenterologista e nutricionista que conheçam o seu quadro.'
+  },
+  fonte: 'Regra de segurança: orientação de fibra/intestino pode agravar DII ativa. Não substitui avaliação médica.',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'cond-celiaca',
+  categoria: 'condicao',
+  severidade: 'atencao',
+  prioridade: 70,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('doenca_celiaca') !== -1,
+  conteudo: {
+    titulo: 'Doença celíaca informada — atenção às fontes de carboidrato',
+    noTreino: 'As metas de carboidrato continuam válidas, mas as fontes precisam ser sem glúten: pão, macarrão e aveia comuns estão fora. Além disso, a absorção de ferro e outros micronutrientes pode estar comprometida se a dieta sem glúten não estiver bem ajustada — algo a acompanhar nos exames.',
+    encaminhar: 'Mantenha acompanhamento com nutricionista para garantir carboidrato suficiente com fontes seguras (arroz, batata, mandioca, tapioca, quinoa) e monitore ferro e vitaminas nos exames periódicos.'
+  },
+  fonte: 'Regra de segurança e orientação: fontes de carboidrato sem glúten e absorção de micronutrientes. Não substitui avaliação médica.',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'cond-transtorno-alimentar',
+  categoria: 'condicao',
+  severidade: 'serio',
+  prioridade: 94,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('transtorno_alimentar') !== -1,
+  suprimeCategorias: ['proteina', 'carboidrato', 'gordura'],
+  conteudo: {
+    titulo: 'Histórico de transtorno alimentar — modo cuidadoso ativado',
+    noTreino: 'Você indicou histórico de transtorno alimentar. Por isso silenciei as metas detalhadas de macronutrientes: mirar gramas de perto pode alimentar fixação e fazer mal. O que este app mantém — e reforça — é a proteção da energia disponível: aqui, comer o suficiente é sempre o objetivo, e nunca há meta de peso ou restrição.',
+    encaminhar: 'O acompanhamento com equipe especializada (médica(o), nutricionista e psicóloga(o) com experiência em transtornos alimentares) é o que sustenta treino e saúde juntos. Se estiver em sofrimento agora, procure apoio — no Brasil, o CVV atende no 188, 24h.'
+  },
+  fonte: 'Regra de segurança: evita orientação que pode reforçar fixação alimentar; preserva a proteção de energia disponível. Não substitui acompanhamento especializado.',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'cond-gravidez',
+  categoria: 'condicao',
+  severidade: 'serio',
+  prioridade: 93,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('gravidez_amamentacao') !== -1,
+  suprimeCategorias: ['energia', 'proteina', 'carboidrato', 'micronutriente'],
+  conteudo: {
+    titulo: 'Gravidez ou amamentação — fora do escopo deste app',
+    noTreino: 'A nutrição na gestação e na amamentação tem necessidades e contraindicações próprias, e a lógica de disponibilidade energética deste app — feita para garantir que você coma o suficiente para treinar — não se transfere para este período, em que as necessidades sobem e a orientação precisa ser individual. Por isso silenciei as metas de energia e de macronutrientes: elas foram feitas para outro contexto.',
+    encaminhar: 'Sua nutrição e a segurança do treino neste período devem ser conduzidas por obstetra e por nutricionista com experiência em gestação. Este app volta a fazer sentido depois.'
+  },
+  fonte: 'Regra de segurança: necessidades da gestação/lactação diferem e exigem manejo próprio. Não substitui avaliação médica.',
+  revisadoEm: '2026-07'
 }
 
 ];

@@ -24,6 +24,14 @@
       { c: 'atleta.pesoKg', r: 'Massa corporal', s: 'só denominador de g/kg', tipo: 'num', u: 'kg' },
       { c: 'atleta.mlgKg', r: 'Massa livre de gordura', s: 'para disponibilidade energética', tipo: 'num', u: 'kg' }
     ]},
+    { grupo: 'Perfil', nota: 'Isto ajusta os limiares para você — não é questionário médico. Fica só no aparelho.', itens: [
+      { c: 'perfil.idade', r: 'Idade', tipo: 'num', u: 'anos' },
+      { c: 'perfil.sexo', r: 'Sexo biológico', s: 'afeta ferro, osso e energia', tipo: 'opcoes',
+        opcoes: [['','—'],['feminino','Feminino'],['masculino','Masculino'],['outro','Outro / prefiro não dizer']] },
+      { c: 'perfil.menstruacao', r: 'Ciclo menstrual', tipo: 'opcoes',
+        opcoes: [['','—'],['regular','Regular'],['irregular','Irregular'],['ausente','Ausente'],['nao_se_aplica','Não se aplica']] },
+      { c: 'perfil.condicoes', r: 'Condições de saúde', s: 'o app silencia o que exige manejo clínico e encaminha', tipo: 'multi', opcoes: 'CONDICOES' }
+    ]},
     { grupo: 'Exames', itens: [
       { c: 'exames.ferritina', r: 'Ferritina', tipo: 'medida', u: 'ng/mL' },
       { c: 'exames.magnesio',  r: 'Magnésio',  tipo: 'medida', u: 'mg/dL', passo: 0.1 },
@@ -80,6 +88,18 @@
     { c:'exames.vitaminaD', nome:'Vitamina D',   u:'ng/mL', min:0,   max:60,  baixo:20,  alvo:40 },
     { c:'exames.zinco',     nome:'Zinco',        u:'µg/dL', min:50,  max:120, baixo:70,  alvo:70 },
     { c:'exames.b12',       nome:'Vitamina B12', u:'pg/mL', min:0,   max:700, baixo:300, alvo:300 }
+  ];
+
+  // Catálogo da triagem de condições. A chave casa com o que as regras
+  // 'condicao' testam em base-regras.js.
+  const CONDICOES = [
+    ['diabetes', 'Diabetes'],
+    ['doenca_renal', 'Doença renal'],
+    ['hipertensao', 'Hipertensão'],
+    ['dii', 'Doença inflamatória intestinal'],
+    ['doenca_celiaca', 'Doença celíaca'],
+    ['transtorno_alimentar', 'Histórico de transtorno alimentar'],
+    ['gravidez_amamentacao', 'Gravidez ou amamentação']
   ];
 
   const ICONES_ST = {
@@ -240,11 +260,15 @@
   function desenharFuel() {
     derivar();
     const h = estado.hoje, sem = estado.semana, at = estado.atleta;
+    const gates = (Motor.avaliar(estado, { base: BASE_REGRAS }).gates) || {};
+    const bloqueio = '<div class="vazio">Esta orientação está sob manejo da sua condição de saúde — o motivo e o encaminhamento estão no topo da aba <b>Hoje</b>.</div>';
     let html = '';
 
     // Anel de carboidrato do dia
     const meta = num(h.carboMeta), cons = num(h.carboConsumido);
-    if (meta) {
+    if (gates.carboidrato) {
+      html += bloqueio;
+    } else if (meta) {
       const pct = cons != null ? Math.round(cons / meta * 100) : 0;
       html += `<div class="hero"><div class="hero-row">
         ${anel(cons != null ? Math.min(100, pct) : null, 'DA META')}
@@ -262,7 +286,7 @@
 
     // Distribuição-alvo de macros (derivada do peso — rótulo honesto: são metas)
     const peso = num(at.pesoKg);
-    if (peso) {
+    if (peso && !gates.proteina && !gates.carboidrato && !gates.gordura) {
       const cMeta = meta || Math.round(peso * 5);
       const pMeta = Math.round(peso * 1.8);
       const gMeta = Math.round(peso * 1.0);
@@ -285,7 +309,7 @@
 
     // Disponibilidade energética
     const ea = num(sem.ea);
-    if (ea != null) {
+    if (ea != null && !gates.energia) {
       const st = ea >= 40 ? 'bom' : ea >= 30 ? 'atencao' : 'critico';
       const pct = Math.max(2, Math.min(100, ea / 50 * 100));
       html += `<div class="sec">Disponibilidade energética</div>
@@ -300,7 +324,7 @@
 
     // Hidratação
     const sod = num(estado.suor.sodioMgL), taxa = num(estado.suor.taxaLh);
-    if (sod != null || taxa != null) {
+    if (!gates.hidratacao && (sod != null || taxa != null)) {
       html += `<div class="sec">Hidratação e eletrólitos</div>
         <div class="card"><table class="tbl">
           <tr><th>Parâmetro</th><th>Seu perfil</th></tr>
@@ -311,7 +335,7 @@
     }
 
     // Referência peri-treino (conteúdo educativo, adapta ao tipo de sessão)
-    if (['intenso','longo','forca'].includes(h.tipoSessao)) {
+    if (!gates.carboidrato && ['intenso','longo','forca'].includes(h.tipoSessao)) {
       html += `<div class="sec">Peri-treino · referência</div>
         <div class="card"><ul class="plan">
           <li><span class="t">3–4 h antes</span><span>1–4 g/kg de carboidrato, pouca fibra e gordura.</span></li>
@@ -331,6 +355,7 @@
   function desenharCorpo() {
     derivar();
     const sem = estado.semana, rec = estado.recuperacao;
+    const gates = (Motor.avaliar(estado, { base: BASE_REGRAS }).gates) || {};
     let html = '';
 
     // Micronutrientes
@@ -358,7 +383,10 @@
 
     // Intestino
     const plantas = num(sem.plantasDistintas);
-    if (plantas != null || num(sem.fibraMediaG) != null) {
+    if (gates.intestino) {
+      html += '<div class="sec">Eixo intestino–cérebro</div>';
+      html += '<div class="vazio">A orientação de intestino está sob manejo da sua condição de saúde — o motivo e o encaminhamento estão no topo da aba <b>Hoje</b>.</div>';
+    } else if (plantas != null || num(sem.fibraMediaG) != null) {
       html += '<div class="sec">Eixo intestino–cérebro</div>';
       if (plantas != null) {
         const st = plantas >= 25 ? 'bom' : 'atencao';
@@ -423,6 +451,16 @@
     if (item.tipo === 'texto') {
       return `<div class="campo">${rot}<input type="text" data-c="${item.c}" value="${esc(v || '')}"></div>`;
     }
+    if (item.tipo === 'multi') {
+      const ops = item.opcoes === 'CONDICOES' ? CONDICOES : item.opcoes;
+      const sel = ler(item.c) || [];
+      const chips = ops.map(([k, r]) =>
+        `<span class="chip ${sel.indexOf(k) !== -1 ? 'on' : ''}" data-multi="${item.c}" data-key="${esc(k)}">${esc(r)}</span>`).join('');
+      return `<div class="campo" style="display:block">
+        <div class="rot" style="margin-bottom:8px">${esc(item.r)}${item.s ? `<small>${esc(item.s)}</small>` : ''}</div>
+        <div class="chips" style="margin-top:0">${chips}</div>
+      </div>`;
+    }
     return `<div class="campo">${rot}
       <input type="number" step="${passo}" data-c="${item.c}" value="${v != null ? v : ''}" placeholder="${item.u || ''}">
     </div>`;
@@ -430,7 +468,9 @@
 
   function desenharDados() {
     let html = FORMULARIO.map(g =>
-      `<div class="sec">${esc(g.grupo)}</div><div class="grupo">${g.itens.map(campoHTML).join('')}</div>`
+      `<div class="sec">${esc(g.grupo)}</div>` +
+      (g.nota ? `<div class="note" style="margin:-4px 2px 9px">${esc(g.nota)}</div>` : '') +
+      `<div class="grupo">${g.itens.map(campoHTML).join('')}</div>`
     ).join('');
 
     html += `<div class="sec">Backup</div>
@@ -457,6 +497,20 @@
         escrever(caminho, valor);
         derivar();
         Armazem.salvar(estado);
+        aviso('Salvo');
+      });
+    });
+
+    // Chips de seleção múltipla (condições de saúde)
+    $('#a-dados').querySelectorAll('[data-multi]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const caminho = chip.dataset.multi, key = chip.dataset.key;
+        const arr = (ler(caminho) || []).slice();
+        const i = arr.indexOf(key);
+        if (i === -1) arr.push(key); else arr.splice(i, 1);
+        escrever(caminho, arr);
+        Armazem.salvar(estado);
+        desenharDados();   // atualiza o estado visual dos chips
         aviso('Salvo');
       });
     });
@@ -522,7 +576,7 @@
 
     html += `<div class="sec">Versão</div>
       <div class="aviso" style="font-size:12.5px;color:var(--ink-2)">
-        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v2</code><br>
+        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v3</code><br>
         Funciona offline. Para atualizar, feche e abra de novo com internet.
       </div>`;
 

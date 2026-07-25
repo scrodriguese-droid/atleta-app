@@ -27,6 +27,13 @@ var ESTADO_EXEMPLO = {
     doseProteinaAlvo: 24        // 0,35 g/kg — usado na interpolação de texto
   },
 
+  perfil: {
+    idade: 34,
+    sexo: 'masculino',
+    menstruacao: 'nao_se_aplica',
+    condicoes: []               // experimente ['doenca_renal'] na bancada
+  },
+
   exames: {
     ferritina:  { v: 22,  data: '2026-07-12' },
     magnesio:   { v: 1.7, data: '2026-07-12' },

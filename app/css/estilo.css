@@ -140,6 +140,8 @@ ul.plan li b{color:var(--ink);font-weight:600}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
 .chip{font-size:11.5px;color:var(--ink-2);background:var(--surface-2);
       border:1px solid var(--border);border-radius:999px;padding:5px 10px}
+.chip[data-multi]{cursor:pointer;user-select:none}
+.chip.on{color:var(--ink);border-color:rgba(25,158,112,.55);background:rgba(25,158,112,.14)}
 
 /* ---- tabela ---- */
 table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}

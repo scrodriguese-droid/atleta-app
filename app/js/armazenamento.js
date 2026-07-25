@@ -24,6 +24,12 @@ var Armazem = (function () {
       nome: '', modalidade: 'endurance',
       pesoKg: 70, mlgKg: 58, doseProteinaAlvo: 24
     },
+    perfil: {
+      idade: null,
+      sexo: null,          // 'feminino' | 'masculino' | 'outro'
+      menstruacao: null,   // 'regular' | 'irregular' | 'ausente' | 'nao_se_aplica'
+      condicoes: []        // chaves da triagem de condições de saúde
+    },
     exames: {
       ferritina:  { v: null, data: null },
       magnesio:   { v: null, data: null },

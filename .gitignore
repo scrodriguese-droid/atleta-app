@@ -1,0 +1,21 @@
+# ─── Dados pessoais — NUNCA versionar ────────────────────────────────────
+# O app exporta backups com seus exames e registros reais. Se um cair aqui
+# dentro por engano, esta linha impede que ele vá parar no repositório público.
+atleta-backup-*.json
+*.backup.json
+
+# ─── Node (futuro) ───────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# ─── Sistema operacional / OneDrive ──────────────────────────────────────
+Thumbs.db
+desktop.ini
+.DS_Store
+~$*
+
+# ─── Editores ────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp

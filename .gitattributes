@@ -1,0 +1,7 @@
+# Fim de linha determinístico: LF no repositório, para o servidor Linux do
+# Pages servir os arquivos exatamente como versionados. Silencia também os
+# avisos de CRLF no Windows.
+* text=auto eol=lf
+
+# Binários — nunca normalizar.
+*.png binary

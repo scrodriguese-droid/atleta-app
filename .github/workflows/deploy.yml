@@ -1,0 +1,51 @@
+# ============================================================================
+# Deploy do PWA para o GitHub Pages
+# ----------------------------------------------------------------------------
+# Publica APENAS a pasta app/ — o resto do repositório (motor/bancada,
+# ferramentas, simulação) fica versionado mas fora do site.
+#
+# Todo push na branch main republica o app. Bumpou o VERSAO do service
+# worker em app/sw.js? É só dar push que a versão nova vai ao ar.
+#
+# Pré-requisito, uma vez só: em Settings > Pages, escolha "GitHub Actions"
+# como Source. Sem isso, este workflow não tem para onde publicar.
+# ============================================================================
+
+name: Deploy PWA para o Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # botão de deploy manual na aba Actions
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# uma publicação por vez; se você empurrar duas seguidas, a nova cancela a antiga
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Buscar o código
+        uses: actions/checkout@v4
+
+      - name: Preparar o Pages
+        uses: actions/configure-pages@v5
+
+      - name: Empacotar apenas a pasta app/
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: app
+
+      - name: Publicar
+        id: deployment
+        uses: actions/deploy-pages@v4

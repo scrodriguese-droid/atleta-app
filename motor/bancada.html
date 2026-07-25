@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bancada do motor de regras — ATLETA</title>
+<style>
+  :root{
+    color-scheme:dark;
+    --plane:#0d0d0d; --surface:#1a1a19; --surface-2:#222220; --surface-3:#2a2a27;
+    --ink:#fff; --ink-2:#c3c2b7; --muted:#898781; --border:rgba(255,255,255,.10);
+    --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+    --s1:#3987e5; --brand:#199e70;
+    --font:system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--plane);color:var(--ink);font-family:var(--font);line-height:1.45}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 20px 60px}
+  h1{font-size:22px;font-weight:650;letter-spacing:-.01em;margin:0 0 4px}
+  .lead{color:var(--ink-2);font-size:13.5px;margin:0 0 22px;max-width:70ch}
+  .kicker{display:inline-block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+          color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:5px 11px;margin-bottom:14px}
+  .grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:26px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;position:sticky;top:20px}
+  .panel h2{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;font-weight:650}
+  .ctrl{margin-bottom:15px}
+  .ctrl label{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-2);margin-bottom:6px}
+  .ctrl label b{color:var(--ink);font-weight:640;font-variant-numeric:tabular-nums}
+  .ctrl input[type=range]{width:100%;accent-color:var(--brand);height:18px}
+  .ctrl select{width:100%;background:var(--surface-2);border:1px solid var(--border);color:var(--ink);
+               border-radius:9px;padding:7px 9px;font-family:inherit;font-size:12.5px}
+  .divider{border-top:1px solid var(--border);margin:16px 0 15px}
+
+  .sec{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+       margin:26px 0 10px;font-weight:650;display:flex;align-items:center;gap:8px}
+  .sec:first-child{margin-top:0}
+  .sec span.n{background:var(--surface-3);border-radius:20px;padding:2px 8px;font-size:10.5px;letter-spacing:0;color:var(--ink-2)}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:10px;
+        border-left-width:3px;border-left-style:solid}
+  .card.critico{border-left-color:var(--critical)}
+  .card.serio{border-left-color:var(--serious)}
+  .card.atencao{border-left-color:var(--warning)}
+  .card.info{border-left-color:var(--s1)}
+  .card.bom{border-left-color:var(--good)}
+  .card h3{margin:0 0 9px;font-size:14.5px;font-weight:640;line-height:1.35}
+  .card .fld{margin:0 0 9px;font-size:12.8px;color:var(--ink-2);line-height:1.6}
+  .card .fld:last-of-type{margin-bottom:0}
+  .card .fld em{font-style:normal;display:block;font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+                color:var(--muted);font-weight:650;margin-bottom:3px}
+  .card .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:11px;border-top:1px solid var(--border)}
+  .tag{font-size:10.5px;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);
+       border-radius:999px;padding:3px 8px}
+  .tag.sev{font-weight:650}
+  .tag.sev.critico{color:var(--critical)} .tag.sev.serio{color:var(--serious)}
+  .tag.sev.atencao{color:var(--warning)} .tag.sev.info{color:var(--s1)} .tag.sev.bom{color:var(--good)}
+  .src{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5;font-style:italic}
+
+  .row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 13px;margin-bottom:7px;
+       display:flex;gap:10px;align-items:baseline;font-size:12.5px}
+  .row code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11.5px;color:var(--ink)}
+  .row .why{color:var(--muted);font-size:11.5px;margin-left:auto;text-align:right}
+  .row.err{border-color:rgba(208,59,59,.4)}
+  .row.err code{color:var(--critical)}
+
+  .empty{color:var(--muted);font-size:12.5px;padding:10px 2px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+  .stat .l{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:650}
+  .stat .v{font-size:21px;font-weight:650;margin-top:3px;letter-spacing:-.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Bancada · ferramenta de autoria</div>
+  <h1>Motor de regras</h1>
+  <p class="lead">Mexa nos controles e veja quais regras disparam, quais são suprimidas por outras mais específicas e quais não puderam ser avaliadas por falta de dado. Nenhuma chamada de rede, nenhum modelo — só <code>base-regras.js</code> avaliado contra um estado.</p>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Estado simulado</h2>
+
+      <div class="ctrl">
+        <label>Ferritina <b><span id="l-fer">22</span> ng/mL</b></label>
+        <input type="range" id="fer" min="8" max="80" value="22">
+      </div>
+      <div class="ctrl">
+        <label>Vitamina D <b><span id="l-vd">27</span> ng/mL</b></label>
+        <input type="range" id="vd" min="10" max="60" value="27">
+      </div>
+      <div class="ctrl">
+        <label>Magnésio <b><span id="l-mg">1,7</span> mg/dL</b></label>
+        <input type="range" id="mg" min="12" max="26" value="17">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="ctrl">
+        <label>Disponibilidade energética <b><span id="l-ea">41</span></b></label>
+        <input type="range" id="ea" min="18" max="50" value="41">
+      </div>
+      <div class="ctrl">
+        <label>Sessão de hoje</label>
+        <select id="sessao">
+          <option value="intenso" selected>Intenso</option>
+          <option value="longo">Longo</option>
+          <option value="moderado">Moderado</option>
+          <option value="forca">Força</option>
+          <option value="descanso">Descanso</option>
+        </select>
+      </div>
+      <div class="ctrl">
+        <label>Hora do dia <b><span id="l-hora">15</span>h</b></label>
+        <input type="range" id="hora" min="6" max="23" value="15">
+      </div>
+      <div class="ctrl">
+        <label>Carbo consumido <b><span id="l-cc">347</span> g</b></label>
+        <input type="range" id="cc" min="0" max="600" step="10" value="347">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="ctrl">
+        <label>Plantas distintas <b><span id="l-pl">19</span>/30</b></label>
+        <input type="range" id="pl" min="4" max="34" value="19">
+      </div>
+      <div class="ctrl">
+        <label>Sintomas GI na semana <b><span id="l-gi">2</span></b></label>
+        <input type="range" id="gi" min="0" max="6" value="2">
+      </div>
+      <div class="ctrl">
+        <label>Cãibras na semana <b><span id="l-cb">1</span></b></label>
+        <input type="range" id="cb" min="0" max="5" value="1">
+      </div>
+      <div class="ctrl">
+        <label>Sono médio <b><span id="l-so">7,2</span> h</b></label>
+        <input type="range" id="so" min="45" max="95" value="72">
+      </div>
+      <div class="ctrl">
+        <label>Razão aguda:crônica <b><span id="l-ac">1,06</span></b></label>
+        <input type="range" id="ac" min="60" max="220" value="106">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="ctrl">
+        <label>Idade do exame <b><span id="l-idade">12</span> dias</b></label>
+        <input type="range" id="idade" min="0" max="500" value="12">
+      </div>
+    </div>
+
+    <div>
+      <div class="stats" id="stats"></div>
+
+      <div class="sec">Briefing — o que a tela mostra <span class="n" id="n-cards">0</span></div>
+      <div id="cards"></div>
+
+      <div class="sec">Suprimidas por regra mais específica <span class="n" id="n-sup">0</span></div>
+      <div id="sup"></div>
+
+      <div class="sec">Não avaliadas — dado ausente ou vencido <span class="n" id="n-sem">0</span></div>
+      <div id="sem"></div>
+
+      <div class="sec">Rejeitadas na carga <span class="n" id="n-err">0</span></div>
+      <div id="err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Quebra-cache: durante a autoria você edita as regras e recarrega. Sem isto,
+     o navegador serve a versão antiga do arquivo e você depura um fantasma. -->
+<script>
+  ['../app/js/motor-regras.js','../app/js/base-regras.js','../app/js/estado-exemplo.js'].forEach(function(f){
+    document.write('<script src="' + f + '?t=' + Date.now() + '"><\/script>');
+  });
+</script>
+<script>
+const $ = id => document.getElementById(id);
+const vv = n => Number.isInteger(n) ? n : n.toFixed(1).replace('.', ',');
+
+function montarEstado(){
+  const e = JSON.parse(JSON.stringify(ESTADO_EXEMPLO));
+  const dias = +$('idade').value;
+  const d = new Date('2026-07-24T00:00:00');
+  d.setDate(d.getDate() - dias);
+  const dataExame = d.toISOString().slice(0,10);
+
+  e.exames.ferritina  = { v:+$('fer').value, data:dataExame };
+  e.exames.vitaminaD  = { v:+$('vd').value,  data:dataExame };
+  e.exames.magnesio   = { v:+$('mg').value/10, data:dataExame };
+  e.exames.zinco.data = dataExame;
+  e.exames.b12.data   = dataExame;
+
+  e.semana.ea               = +$('ea').value;
+  e.semana.plantasDistintas = +$('pl').value;
+  e.semana.sintomasGI       = +$('gi').value;
+  e.semana.caibras          = +$('cb').value;
+  e.semana.sonoMedioH       = +$('so').value/10;
+  e.recuperacao.acwr        = +$('ac').value/100;
+
+  e.hoje.tipoSessao      = $('sessao').value;
+  e.hoje.carboConsumido  = +$('cc').value;
+  e.hoje.carboRestante   = Math.max(0, e.hoje.carboMeta - e.hoje.carboConsumido);
+  e.contexto.horaDoDia   = +$('hora').value;
+
+  // rótulos
+  $('l-fer').textContent = $('fer').value;
+  $('l-vd').textContent  = $('vd').value;
+  $('l-mg').textContent  = vv(+$('mg').value/10);
+  $('l-ea').textContent  = $('ea').value;
+  $('l-hora').textContent= $('hora').value;
+  $('l-cc').textContent  = $('cc').value;
+  $('l-pl').textContent  = $('pl').value;
+  $('l-gi').textContent  = $('gi').value;
+  $('l-cb').textContent  = $('cb').value;
+  $('l-so').textContent  = vv(+$('so').value/10);
+  $('l-ac').textContent  = vv(+$('ac').value/100);
+  $('l-idade').textContent = dias;
+
+  return e;
+}
+
+const CAMPOS = [
+  ['mecanismo','Mecanismo'],
+  ['noTreino','No seu treino'],
+  ['correcao','O que fazer'],
+  ['encaminhar','Quando procurar um profissional']
+];
+
+function cardHTML(c){
+  const corpo = CAMPOS
+    .filter(([k]) => c.conteudo[k])
+    .map(([k,rot]) => `<p class="fld"><em>${rot}</em>${c.conteudo[k]}</p>`).join('');
+  return `<div class="card ${c.severidade}">
+    <h3>${c.conteudo.titulo}</h3>
+    ${corpo}
+    <div class="meta">
+      <span class="tag sev ${c.severidade}">${c.severidade}</span>
+      <span class="tag">${c.categoria}</span>
+      <span class="tag">${c.id}</span>
+      <span class="tag">revisto ${c.revisadoEm}</span>
+      ${c.trace.map(t=>`<span class="tag">${t}</span>`).join('')}
+    </div>
+    <div class="src">Fonte: ${c.fonte}</div>
+  </div>`;
+}
+
+function render(){
+  const estado = montarEstado();
+  const r = Motor.briefing(estado, { base: BASE_REGRAS, max: 4 });
+  const a = r.auditoria;
+
+  $('stats').innerHTML = `
+    <div class="stat"><div class="l">Regras na base</div><div class="v">${BASE_REGRAS.length}</div></div>
+    <div class="stat"><div class="l">Dispararam</div><div class="v">${a.ativas.length + a.suprimidas.length}</div></div>
+    <div class="stat"><div class="l">No briefing</div><div class="v">${r.cards.length}</div></div>
+    <div class="stat"><div class="l">Sem dado</div><div class="v">${a.semDados.length}</div></div>`;
+
+  $('cards').innerHTML = r.cards.length
+    ? r.cards.map(cardHTML).join('')
+    : '<div class="empty">Nenhuma regra disparou com este estado.</div>';
+  $('n-cards').textContent = r.cards.length;
+
+  const fila = r.naoMostradas.map(c =>
+    `<div class="row"><code>${c.id}</code><span class="why">na fila — passou do orçamento de ${4} cards</span></div>`).join('');
+  $('sup').innerHTML = (a.suprimidas.map(s =>
+      `<div class="row"><code>${s.id}</code><span class="why">calada por <code>${s.suprimidaPor}</code></span></div>`).join('') + fila)
+    || '<div class="empty">Nada suprimido.</div>';
+  $('n-sup').textContent = a.suprimidas.length + r.naoMostradas.length;
+
+  $('sem').innerHTML = a.semDados.map(s => {
+    const b = s.bloqueio;
+    const motivo = b.motivo === 'desatualizado'
+      ? `<code>${b.caminho}</code> tem ${b.idadeDias} dias (limite ${b.limiteDias})`
+      : b.motivo === 'ausente' ? `falta <code>${b.caminho}</code>` : `erro: ${b.erro}`;
+    return `<div class="row ${b.motivo==='erro'?'err':''}"><code>${s.id}</code><span class="why">${motivo}</span></div>`;
+  }).join('') || '<div class="empty">Todas as regras puderam ser avaliadas.</div>';
+  $('n-sem').textContent = a.semDados.length;
+
+  $('err').innerHTML = a.erros.map(e =>
+    `<div class="row err"><code>${e.id}</code><span class="why">${e.problemas.join(' · ')}</span></div>`).join('')
+    || '<div class="empty">Todas as regras passaram na validação de carga.</div>';
+  $('n-err').textContent = a.erros.length;
+}
+
+document.querySelectorAll('input,select').forEach(c => c.addEventListener('input', render));
+render();
+</script>
+</body>
+</html>

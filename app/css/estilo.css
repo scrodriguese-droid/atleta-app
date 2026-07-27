@@ -143,6 +143,26 @@ ul.plan li b{color:var(--ink);font-weight:600}
 .chip[data-multi]{cursor:pointer;user-select:none}
 .chip.on{color:var(--ink);border-color:rgba(25,158,112,.55);background:rgba(25,158,112,.14)}
 
+/* ---- escala qualitativa do exame ---- */
+.escala-input{margin-top:12px}
+.escala-input input[type=range]{width:100%;height:24px;margin:0;accent-color:var(--brand);cursor:pointer}
+.escala-input.off input[type=range]{accent-color:var(--surface-3);opacity:.55}
+.escala-fim{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);
+            margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.escala-lab{margin-top:8px;font-size:13.5px;font-weight:640}
+.escala-lab.critico{color:var(--critical)} .escala-lab.atencao{color:var(--warning)} .escala-lab.bom{color:var(--good)}
+.escala-input.off .escala-lab{color:var(--muted);font-weight:500}
+.escala-limpar{background:none;border:0;color:var(--muted);font-family:inherit;font-size:11px;
+               text-decoration:underline;cursor:pointer;padding:0}
+.escala-limpar:hover{color:var(--ink-2)}
+
+/* visualização (aba Corpo): 5 segmentos, o informado aceso */
+.escala-view{display:flex;gap:4px;margin:12px 0 0}
+.escala-view i{flex:1;height:9px;border-radius:3px;background:var(--surface-3)}
+.escala-view i.on.critico{background:var(--critical)}
+.escala-view i.on.atencao{background:var(--warning)}
+.escala-view i.on.bom{background:var(--good)}
+
 /* ---- tabela ---- */
 table.tbl{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
 table.tbl th{text-align:left;color:var(--muted);font-weight:650;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:0 0 7px}

@@ -74,6 +74,7 @@
     if (v === undefined || v === null) return false;
     if (typeof v === 'number' && isNaN(v)) return false;
     if (typeof v === 'object' && 'v' in v) return existe(v.v);
+    if (typeof v === 'object' && 'nivel' in v) return existe(v.nivel);
     return true;
   }
 
@@ -262,6 +263,7 @@
           trace: (regra.requer || []).map(function (c) {
             let v = ler(estado, c);
             if (v && typeof v === 'object' && 'v' in v) v = v.v;
+            else if (v && typeof v === 'object' && 'nivel' in v) v = 'nível ' + v.nivel;
             return c + ' = ' + v;
           })
         });

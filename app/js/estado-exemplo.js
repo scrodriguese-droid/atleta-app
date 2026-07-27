@@ -34,12 +34,13 @@ var ESTADO_EXEMPLO = {
     condicoes: []               // experimente ['doenca_renal'] na bancada
   },
 
+  // Posição qualitativa 0–4: 0 abaixo · 1 limite inferior · 2 média · 3 limite superior · 4 acima
   exames: {
-    ferritina:  { v: 22,  data: '2026-07-12' },
-    magnesio:   { v: 1.7, data: '2026-07-12' },
-    vitaminaD:  { v: 27,  data: '2026-07-12' },
-    zinco:      { v: 92,  data: '2026-07-12' },
-    b12:        { v: 486, data: '2026-07-12' }
+    ferritina:  { nivel: 0, data: '2026-07-12' },
+    magnesio:   { nivel: 1, data: '2026-07-12' },
+    vitaminaD:  { nivel: 1, data: '2026-07-12' },
+    zinco:      { nivel: 3, data: '2026-07-12' },
+    b12:        { nivel: 2, data: '2026-07-12' }
   },
 
   hoje: {

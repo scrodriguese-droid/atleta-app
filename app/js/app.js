@@ -33,12 +33,12 @@
       { c: 'perfil.condicoes', r: 'Saúde física', s: 'o app silencia o que exige manejo clínico e encaminha', tipo: 'multi', opcoes: 'CONDICOES_FISICA' },
       { c: 'perfil.condicoes', r: 'Saúde mental', s: 'a nutrição entra como apoio, nunca como tratamento', tipo: 'multi', opcoes: 'CONDICOES_MENTAL' }
     ]},
-    { grupo: 'Exames', itens: [
-      { c: 'exames.ferritina', r: 'Ferritina', tipo: 'medida', u: 'ng/mL' },
-      { c: 'exames.magnesio',  r: 'Magnésio',  tipo: 'medida', u: 'mg/dL', passo: 0.1 },
-      { c: 'exames.vitaminaD', r: 'Vitamina D', tipo: 'medida', u: 'ng/mL' },
-      { c: 'exames.zinco',     r: 'Zinco',     tipo: 'medida', u: 'µg/dL' },
-      { c: 'exames.b12',       r: 'Vitamina B12', tipo: 'medida', u: 'pg/mL' }
+    { grupo: 'Exames', nota: 'Não precisa do número exato. Arraste o marcador para onde seu último exame ficou — abaixo da média, no limite, ou acima. Se lembra só que estava "normal, mas quase baixo", é o limite inferior.', itens: [
+      { c: 'exames.ferritina', r: 'Ferritina', tipo: 'nivel' },
+      { c: 'exames.magnesio',  r: 'Magnésio',  tipo: 'nivel' },
+      { c: 'exames.vitaminaD', r: 'Vitamina D', tipo: 'nivel' },
+      { c: 'exames.zinco',     r: 'Zinco',     tipo: 'nivel' },
+      { c: 'exames.b12',       r: 'Vitamina B12', tipo: 'nivel' }
     ]},
     { grupo: 'Hoje', itens: [
       { c: 'hoje.tipoSessao', r: 'Sessão', tipo: 'opcoes',
@@ -81,15 +81,16 @@
     ['encaminhar', 'Quando procurar um profissional']
   ];
 
-  // Faixas dos micronutrientes (min/max da barra, alvo, limiar baixo).
-  // Maior é melhor em todos estes. Fonte dos limiares: base-regras.js.
+  // Exames por posição qualitativa (nível 0–4), não por número exato.
   const MICROS = [
-    { c:'exames.ferritina', nome:'Ferritina',    u:'ng/mL', min:0,   max:80,  baixo:30,  alvo:40 },
-    { c:'exames.magnesio',  nome:'Magnésio',     u:'mg/dL', min:1.4, max:2.6, baixo:1.8, alvo:2.0 },
-    { c:'exames.vitaminaD', nome:'Vitamina D',   u:'ng/mL', min:0,   max:60,  baixo:20,  alvo:40 },
-    { c:'exames.zinco',     nome:'Zinco',        u:'µg/dL', min:50,  max:120, baixo:70,  alvo:70 },
-    { c:'exames.b12',       nome:'Vitamina B12', u:'pg/mL', min:0,   max:700, baixo:300, alvo:300 }
+    { c:'exames.ferritina', nome:'Ferritina' },
+    { c:'exames.magnesio',  nome:'Magnésio' },
+    { c:'exames.vitaminaD', nome:'Vitamina D' },
+    { c:'exames.zinco',     nome:'Zinco' },
+    { c:'exames.b12',       nome:'Vitamina B12' }
   ];
+  const NIVEIS = ['Abaixo da média', 'No limite inferior', 'Na média', 'No limite superior', 'Acima da média'];
+  const statusNivel = n => n === 0 ? 'critico' : n === 1 ? 'atencao' : 'bom';
 
   // Catálogo da triagem de condições, separado por saúde física e mental.
   // As chaves casam com o que as regras 'condicao' testam em base-regras.js.
@@ -367,27 +368,27 @@
     const gates = (Motor.avaliar(estado, { base: BASE_REGRAS }).gates) || {};
     let html = '';
 
-    // Micronutrientes
-    const comExame = MICROS.filter(m => num(ler(m.c + '.v')) != null);
+    // Micronutrientes — posição qualitativa na escala
+    const comExame = MICROS.filter(m => ler(m.c + '.nivel') != null);
     if (comExame.length) {
       html += '<div class="sec">Micronutrientes</div>';
       html += comExame.map(m => {
-        const v = ler(m.c + '.v');
-        const md = medidor(v, m.min, m.max, m.baixo, m.alvo);
-        const rotulo = md.status === 'bom' ? 'Adequado' : md.status === 'atencao' ? 'Atenção' : 'Baixo';
+        const n = ler(m.c + '.nivel');
+        const st = statusNivel(n);
+        const seg = [0,1,2,3,4].map(i => `<i class="${i === n ? 'on ' + st : ''}"></i>`).join('');
         return `<div class="micro">
           <div class="micro-top">
             <span class="nm">${esc(m.nome)}</span>
-            <span class="vl">${fmt(v)}<small>${esc(m.u)}</small></span>
+            <span>${pilula(st, NIVEIS[n])}</span>
           </div>
-          ${md.html}
-          <div style="margin-top:10px">${pilula(md.status, rotulo)}</div>
+          <div class="escala-view">${seg}</div>
+          <div class="escala-fim"><span>abaixo da média</span><span>acima da média</span></div>
         </div>`;
       }).join('');
-      html += '<div class="note" style="margin:0 2px 4px">Cada marcador vira consequência de treino no seu briefing (aba Hoje). Aqui é a leitura numérica contra a faixa-alvo.</div>';
+      html += '<div class="note" style="margin:0 2px 4px">Cada marcador vira consequência de treino no seu briefing (aba Hoje). Aqui é a posição que você informou, na escala.</div>';
     } else {
       html += '<div class="sec">Micronutrientes</div>';
-      html += '<div class="vazio">Cadastre seus exames na aba <b>Dados</b> para ver cada marcador posicionado na sua faixa-alvo.</div>';
+      html += '<div class="vazio">Informe seus exames na aba <b>Dados</b> — só a posição na escala, não o número — para ver cada marcador aqui.</div>';
     }
 
     // Intestino
@@ -444,13 +445,26 @@
     const rot = `<div class="rot">${esc(item.r)}${item.s ? `<small>${esc(item.s)}</small>` : ''}</div>`;
     const passo = item.passo || 1;
 
-    if (item.tipo === 'medida') {
-      const val = (v && v.v != null) ? v.v : '';
+    if (item.tipo === 'nivel') {
+      const nv = (v && v.nivel != null) ? v.nivel : null;
       const data = (v && v.data) ? v.data : '';
-      return `<div class="campo">${rot}<div class="dupla">
-        <input type="date" data-c="${item.c}.data" value="${data}">
-        <input type="number" step="${passo}" data-c="${item.c}.v" value="${val}" placeholder="${item.u || ''}">
-      </div></div>`;
+      const lab = nv == null ? 'Não informado' : NIVEIS[nv];
+      const st = nv == null ? '' : statusNivel(nv);
+      return `<div class="campo" style="display:block">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+          <div class="rot">${esc(item.r)}</div>
+          <input type="date" data-c="${item.c}.data" value="${data}">
+        </div>
+        <div class="escala-input ${nv == null ? 'off' : ''}">
+          <input type="range" min="0" max="4" step="1" value="${nv == null ? 2 : nv}"
+                 data-nivelrange="${item.c}" aria-label="${esc(item.r)}: posição no exame">
+          <div class="escala-fim"><span>abaixo</span><span>na média</span><span>acima</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <div class="escala-lab ${st}" data-nivellab>${esc(lab)}</div>
+            ${nv != null ? `<button class="escala-limpar" data-nivelclear="${item.c}">limpar</button>` : ''}
+          </div>
+        </div>
+      </div>`;
     }
     if (item.tipo === 'opcoes') {
       const ops = item.opcoes.map(([k, r]) =>
@@ -524,6 +538,37 @@
       });
     });
 
+    // Controle de nível do exame (marcador que arrasta)
+    $('#a-dados').querySelectorAll('[data-nivelrange]').forEach(sl => {
+      const caminho = sl.dataset.nivelrange;
+      const wrap = sl.closest('.escala-input');
+      const lab = wrap.querySelector('[data-nivellab]');
+      sl.addEventListener('input', () => {          // feedback ao vivo enquanto arrasta
+        const n = parseInt(sl.value, 10);
+        wrap.classList.remove('off');
+        lab.textContent = NIVEIS[n];
+        lab.className = 'escala-lab ' + statusNivel(n);
+      });
+      sl.addEventListener('change', () => {          // grava ao soltar
+        const n = parseInt(sl.value, 10);
+        const obj = ler(caminho) || {};
+        escrever(caminho, { nivel: n, data: obj.data || null });
+        Armazem.salvar(estado);
+        desenharDados();   // faz aparecer o botão "limpar"
+        aviso('Salvo');
+      });
+    });
+    $('#a-dados').querySelectorAll('[data-nivelclear]').forEach(b => {
+      b.addEventListener('click', () => {
+        const caminho = b.dataset.nivelclear;
+        const obj = ler(caminho) || {};
+        escrever(caminho, { nivel: null, data: obj.data || null });
+        Armazem.salvar(estado);
+        desenharDados();
+        aviso('Limpo');
+      });
+    });
+
     $('#exportar').onclick = () => { Armazem.exportar(estado); aviso('Backup gerado'); };
     $('#importar-btn').onclick = () => $('#importar').click();
     $('#importar').onchange = e => {
@@ -585,7 +630,7 @@
 
     html += `<div class="sec">Versão</div>
       <div class="aviso" style="font-size:12.5px;color:var(--ink-2)">
-        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v5</code><br>
+        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v6</code><br>
         Funciona offline. Para atualizar, feche e abra de novo com internet.
       </div>`;
 

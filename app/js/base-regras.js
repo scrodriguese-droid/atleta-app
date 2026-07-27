@@ -30,10 +30,10 @@ var BASE_REGRAS = [
   severidade: 'critico',
   prioridade: 90,
   requer: ['exames.ferritina', 'atleta.modalidade'],
-  quando: e => e.exames.ferritina.v < 30 && e.atleta.modalidade === 'endurance',
+  quando: e => e.exames.ferritina.nivel === 0 && e.atleta.modalidade === 'endurance',
   suprime: ['ferritina-limitrofe', 'ferro-combinacao'],
   conteudo: {
-    titulo: 'Ferritina em {{exames.ferritina.v}} ng/mL — é o seu limitador de oxigênio',
+    titulo: 'Ferritina abaixo da referência — o seu limitador de oxigênio',
     mecanismo: 'O ferro é o núcleo da hemoglobina e da mioglobina. Com o estoque baixo, falta matéria-prima para produzir hemácias novas, e o transporte de O₂ até a mitocôndria fica limitado. O ferro também compõe os citocromos da cadeia respiratória — mesmo com hemoglobina ainda normal, a produção aeróbia de ATP já perde eficiência.',
     noTreino: 'Fadiga precoce nas séries longas, frequência cardíaca 5 a 8 bpm acima do normal no mesmo pace, pernas pesadas já no aquecimento e recuperação lenta entre tiros. O limiar aeróbio desce sem que nada tenha mudado no treino.',
     correcao: 'Ferro heme (carne vermelha magra, fígado uma vez por semana) absorve 15 a 35%. Fontes vegetais absorvem 2 a 10% — combine sempre com vitamina C na mesma refeição. Segure café, chá e leite por uma hora antes e depois. Priorize ferro pela manhã: a hepcidina sobe por 3 a 6 h após treino intenso e fecha a absorção intestinal.',
@@ -49,9 +49,9 @@ var BASE_REGRAS = [
   severidade: 'atencao',
   prioridade: 60,
   requer: ['exames.ferritina', 'atleta.modalidade'],
-  quando: e => e.exames.ferritina.v >= 30 && e.exames.ferritina.v < 45 && e.atleta.modalidade === 'endurance',
+  quando: e => e.exames.ferritina.nivel === 1 && e.atleta.modalidade === 'endurance',
   conteudo: {
-    titulo: 'Ferritina em {{exames.ferritina.v}} ng/mL — dentro da referência clínica, abaixo do ideal para endurance',
+    titulo: 'Ferritina no limite inferior — dentro da referência, abaixo do ideal para endurance',
     mecanismo: 'A referência laboratorial comum considera deficiência abaixo de 15 a 30 ng/mL, porque foi construída para a população geral. Corredores perdem ferro por três vias somadas: hemólise de impacto na pisada, suor e microssangramento gastrointestinal.',
     noTreino: 'Nesta faixa você provavelmente não sente nada em rodagem, mas a reserva não sustenta um bloco de volume alto. É a faixa em que a queda aparece seis semanas depois, já como perda de pace no limiar.',
     correcao: 'Manter ferro heme em duas refeições semanais, leguminosa com fonte de vitamina C nas demais, e repetir o exame em 90 dias para saber a direção da curva — o valor isolado importa menos que a trajetória.'
@@ -65,7 +65,7 @@ var BASE_REGRAS = [
   severidade: 'info',
   prioridade: 30,
   requer: ['exames.ferritina', 'hoje.refeicaoTemFerroNaoHeme', 'hoje.refeicaoTemVitaminaC'],
-  quando: e => e.exames.ferritina.v < 45 && e.hoje.refeicaoTemFerroNaoHeme && !e.hoje.refeicaoTemVitaminaC,
+  quando: e => e.exames.ferritina.nivel <= 1 && e.hoje.refeicaoTemFerroNaoHeme && !e.hoje.refeicaoTemVitaminaC,
   conteudo: {
     titulo: 'Faltou vitamina C nesta refeição',
     mecanismo: 'O ferro não-heme das leguminosas e folhas é absorvido na forma férrica, que o intestino capta mal. O ascorbato reduz esse ferro à forma ferrosa e forma com ele um quelato solúvel, que atravessa a mucosa com muito mais facilidade. Taninos do café e do chá fazem o caminho inverso: formam complexos insolúveis com o mesmo ferro.',
@@ -83,10 +83,10 @@ var BASE_REGRAS = [
   severidade: 'serio',
   prioridade: 80,
   requer: ['exames.magnesio', 'semana.caibras'],
-  quando: e => e.exames.magnesio.v < 2.0 && e.semana.caibras > 0,
+  quando: e => e.exames.magnesio.nivel <= 1 && e.semana.caibras > 0,
   suprime: ['magnesio-baixo'],
   conteudo: {
-    titulo: 'Magnésio em {{exames.magnesio.v}} mg/dL e {{semana.caibras}} episódio(s) de cãibra nesta semana',
+    titulo: 'Magnésio baixo e {{semana.caibras}} episódio(s) de cãibra nesta semana',
     mecanismo: 'O magnésio é o antagonista natural do cálcio dentro da fibra muscular. Sem ele em quantidade suficiente, o cálcio não é bombeado de volta ao retículo sarcoplasmático e a fibra não consegue relaxar. Ele também é cofator de mais de 300 enzimas, incluindo as que produzem ATP — que só é biologicamente ativo na forma Mg-ATP.',
     noTreino: 'A cãibra é literalmente uma contração que não desliga. Some a isso percepção de esforço mais alta para a mesma carga, tremor fino no fim do longo e dificuldade de entrar em sono profundo — a fase em que ocorre o pico de hormônio do crescimento e a maior parte do reparo tecidual.',
     correcao: 'Sementes de abóbora, castanha-do-pará, cacau 70%, folhas verde-escuras e grão-de-bico na rotina diária. Se a cãibra vier sempre no mesmo grupamento muscular, o problema provavelmente é fadiga local e técnica de passada, não mineral.'
@@ -100,9 +100,9 @@ var BASE_REGRAS = [
   severidade: 'atencao',
   prioridade: 50,
   requer: ['exames.magnesio'],
-  quando: e => e.exames.magnesio.v < 1.8,
+  quando: e => e.exames.magnesio.nivel <= 1,
   conteudo: {
-    titulo: 'Magnésio no limite inferior — {{exames.magnesio.v}} mg/dL',
+    titulo: 'Magnésio no limite inferior',
     mecanismo: 'Cofator de mais de 300 enzimas, entre elas as da produção de ATP. No sistema nervoso, modula receptores NMDA e a liberação de GABA.',
     noTreino: 'Percepção de esforço mais alta para a mesma carga, irritabilidade e sono fragmentado. Aparece antes como sensação de treino "mais duro do que os números dizem" do que como cãibra.',
     correcao: 'Sementes de abóbora, castanhas, cacau 70%, folhas verde-escuras e leguminosas. O magnésio sérico reflete mal o estoque total — a tendência ao longo de três exames diz mais que um valor isolado.'
@@ -118,10 +118,10 @@ var BASE_REGRAS = [
   severidade: 'critico',
   prioridade: 85,
   requer: ['exames.vitaminaD'],
-  quando: e => e.exames.vitaminaD.v < 20,
+  quando: e => e.exames.vitaminaD.nivel === 0,
   suprime: ['vitd-insuficiente'],
   conteudo: {
-    titulo: 'Vitamina D em {{exames.vitaminaD.v}} ng/mL — faixa de deficiência',
+    titulo: 'Vitamina D abaixo da referência — faixa de deficiência',
     mecanismo: 'A vitamina D age como hormônio, com receptores dentro da própria fibra muscular. Influencia força, potência e velocidade de contração das fibras tipo II, além de governar o remodelamento ósseo e a imunidade de mucosa.',
     noTreino: 'Queda documentada de desempenho neuromuscular, risco elevado de fratura por estresse em tíbia e metatarso, e mais infecções de vias aéreas justamente nas semanas em que o volume sobe. Perder dez dias de treino por um resfriado custa mais adaptação do que qualquer sessão isolada entrega.',
     correcao: 'Exposição solar de 15 a 20 minutos com braços e pernas descobertos, sardinha, gema de ovo.',
@@ -136,9 +136,9 @@ var BASE_REGRAS = [
   severidade: 'serio',
   prioridade: 70,
   requer: ['exames.vitaminaD'],
-  quando: e => e.exames.vitaminaD.v >= 20 && e.exames.vitaminaD.v < 32,
+  quando: e => e.exames.vitaminaD.nivel === 1,
   conteudo: {
-    titulo: 'Vitamina D em {{exames.vitaminaD.v}} ng/mL — insuficiente para atleta',
+    titulo: 'Vitamina D no limite inferior — insuficiente para atleta',
     mecanismo: 'Receptores de vitamina D existem no músculo esquelético e nas células de defesa das vias aéreas. A faixa alvo para atletas (40 a 60 ng/mL) é mais alta que a da população geral porque a demanda de remodelamento ósseo e de imunidade é maior.',
     noTreino: 'Abaixo de 30 ng/mL há perda mensurável de desempenho neuromuscular e maior incidência de infecção respiratória em blocos de volume alto. O osso responde pior à carga de impacto — terreno para fratura por estresse.',
     correcao: 'Sol de 15 a 20 minutos por dia sem protetor nos braços, sardinha e gema de ovo na rotina. Reavaliar em 90 dias; se não subir com exposição solar, conversar com seu médico sobre reposição.'
@@ -154,9 +154,9 @@ var BASE_REGRAS = [
   severidade: 'atencao',
   prioridade: 55,
   requer: ['exames.b12'],
-  quando: e => e.exames.b12.v < 300,
+  quando: e => e.exames.b12.nivel <= 1,
   conteudo: {
-    titulo: 'B12 em {{exames.b12.v}} pg/mL',
+    titulo: 'Vitamina B12 abaixo do ideal',
     mecanismo: 'Trabalha junto com o folato na eritropoiese — a formação de hemácias novas — e na manutenção da bainha de mielina.',
     noTreino: 'Fadiga que não melhora com descanso, formigamento em extremidades e, quando somada a ferro baixo, um gargalo duplo na produção de hemácias: falta o mineral e falta o cofator.',
     correcao: 'Carnes, ovos, laticínios e peixes. Em dieta vegetariana estrita, a suplementação é obrigatória — não existe fonte vegetal confiável.'
@@ -170,9 +170,9 @@ var BASE_REGRAS = [
   severidade: 'bom',
   prioridade: 10,
   requer: ['exames.zinco'],
-  quando: e => e.exames.zinco.v >= 70,
+  quando: e => e.exames.zinco.nivel >= 2,
   conteudo: {
-    titulo: 'Zinco adequado — {{exames.zinco.v}} µg/dL',
+    titulo: 'Zinco adequado',
     mecanismo: 'Participa da síntese proteica, da produção de testosterona e da integridade da mucosa intestinal.',
     noTreino: 'Sustenta o reparo de microlesões e a barreira intestinal. Atenção em blocos de calor: as perdas pelo suor derrubam esse valor em poucas semanas.',
     correcao: 'Manter carnes, sementes de abóbora, castanhas e leguminosas na rotina.'
@@ -501,10 +501,10 @@ var BASE_REGRAS = [
   requer: ['exames.ferritina'],
   quando: e => e.perfil && e.perfil.sexo === 'feminino' &&
                ['regular','irregular'].indexOf(e.perfil.menstruacao) !== -1 &&
-               e.exames.ferritina.v < 40,
+               e.exames.ferritina.nivel <= 1,
   suprime: ['ferritina-baixa-endurance', 'ferritina-limitrofe', 'ferro-combinacao'],
   conteudo: {
-    titulo: 'Ferritina em {{exames.ferritina.v}} ng/mL — atenção redobrada pela perda menstrual',
+    titulo: 'Ferritina baixa — atenção redobrada pela perda menstrual',
     mecanismo: 'A menstruação é uma perda mensal e recorrente de ferro. Somada à hemólise de impacto da corrida, ao suor e ao microssangramento intestinal, ela torna a deficiência de ferro muito mais provável em mulheres que menstruam — e desloca a interpretação: a referência laboratorial geral foi construída sobre população mista e subestima o seu risco.',
     noTreino: 'A consequência é a mesma — transporte de oxigênio limitado, fadiga precoce, FC mais alta no mesmo pace — mas você chega lá mais rápido e com menos margem. Por isso o alvo para endurance (acima de 40 ng/mL) importa ainda mais no seu caso.',
     correcao: 'Ferro heme com vitamina C nas refeições, café só uma hora depois, e ferro pela manhã (a hepcidina fecha a absorção após treino intenso). Reavaliar em 90 dias — a trajetória diz mais que o valor isolado.',

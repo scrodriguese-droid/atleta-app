@@ -30,12 +30,14 @@ var Armazem = (function () {
       menstruacao: null,   // 'regular' | 'irregular' | 'ausente' | 'nao_se_aplica'
       condicoes: []        // chaves da triagem de condições de saúde
     },
+    // Cada exame é uma posição qualitativa 0–4 (abaixo → acima da média),
+    // não o valor exato. As pessoas lembram do sentido do exame, não do número.
     exames: {
-      ferritina:  { v: null, data: null },
-      magnesio:   { v: null, data: null },
-      vitaminaD:  { v: null, data: null },
-      zinco:      { v: null, data: null },
-      b12:        { v: null, data: null }
+      ferritina:  { nivel: null, data: null },
+      magnesio:   { nivel: null, data: null },
+      vitaminaD:  { nivel: null, data: null },
+      zinco:      { nivel: null, data: null },
+      b12:        { nivel: null, data: null }
     },
     hoje: {
       tipoSessao: 'moderado', duracaoPrevistaMin: 60,

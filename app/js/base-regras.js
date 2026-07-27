@@ -650,6 +650,52 @@ var BASE_REGRAS = [
   revisadoEm: '2026-07'
 },
 {
+  id: 'cond-depressao',
+  categoria: 'condicao',
+  severidade: 'serio',
+  prioridade: 86,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('depressao') !== -1,
+  conteudo: {
+    titulo: 'Depressão informada — aqui a nutrição é apoio, não tratamento',
+    noTreino: 'Existe uma conexão real entre intestino, alimentação e humor, e treinar bem ajuda a disposição. Mas isso é apoio complementar: não trata depressão e não substitui psicoterapia nem medicação. Em fases de baixa, o apetite muda e a energia disponível pode cair sem você perceber — a proteção de energia deste app segue valendo a seu favor, e comer o suficiente continua sendo o objetivo.',
+    encaminhar: 'Mantenha o acompanhamento com psiquiatra e/ou psicóloga(o), e nunca ajuste medicação por causa deste app. Se estiver com pensamentos de se machucar, procure ajuda agora — no Brasil, o CVV atende no 188, 24h.'
+  },
+  fonte: 'Regra de apoio e segurança: nutrição como coadjuvante, jamais como tratamento de saúde mental. Não substitui acompanhamento profissional.',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'cond-ansiedade',
+  categoria: 'condicao',
+  severidade: 'atencao',
+  prioridade: 78,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('ansiedade') !== -1,
+  conteudo: {
+    titulo: 'Ansiedade informada — dois pontos práticos',
+    noTreino: 'Ansiedade e intestino conversam nos dois sentidos: sintomas gastrointestinais no treino podem ter um componente ansioso, e vale registrar isso para levar a quem te acompanha. Um ponto concreto e sob seu controle: excesso de cafeína (café, pré-treino, energéticos) pode intensificar sintomas de ansiedade e piorar o sono — algo a observar, sobretudo na semana de prova.',
+    encaminhar: 'Este app não trata ansiedade nem substitui acompanhamento profissional. Se precisar de apoio emocional, o CVV atende no 188, 24h.'
+  },
+  fonte: 'Regra de apoio e segurança: orientação complementar, não tratamento. Não substitui acompanhamento profissional.',
+  revisadoEm: '2026-07'
+},
+{
+  id: 'cond-bipolar',
+  categoria: 'condicao',
+  severidade: 'serio',
+  prioridade: 89,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('transtorno_bipolar') !== -1,
+  suprimeCategorias: ['hidratacao'],
+  conteudo: {
+    titulo: 'Transtorno bipolar informado — silenciei sódio e hidratação',
+    noTreino: 'Se você usa lítio, o equilíbrio de sódio e de líquidos afeta diretamente o nível de lítio no sangue: suar muito, repor sódio de forma agressiva ou mudar bruscamente a hidratação pode elevar o lítio a níveis tóxicos ou reduzi-lo demais. Por isso silenciei a orientação de sódio e hidratação para você. Além disso, sono e rotina são pilares da estabilidade no transtorno bipolar, e blocos de treino intenso mexem nos dois — vale acompanhar de perto.',
+    encaminhar: 'Defina hidratação, sódio e carga de treino junto da(o) psiquiatra, sobretudo se usa lítio (que exige monitoração do nível sérico). Nunca ajuste medicação por causa deste app. Em crise, o CVV atende no 188.'
+  },
+  fonte: 'Regra de segurança: sódio e hidratação alteram a litemia; sono/rotina afetam estabilidade. Não substitui avaliação médica.',
+  revisadoEm: '2026-07'
+},
+{
   id: 'cond-gravidez',
   categoria: 'condicao',
   severidade: 'serio',

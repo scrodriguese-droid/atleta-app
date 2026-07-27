@@ -30,7 +30,8 @@
         opcoes: [['','—'],['feminino','Feminino'],['masculino','Masculino'],['outro','Outro / prefiro não dizer']] },
       { c: 'perfil.menstruacao', r: 'Ciclo menstrual', tipo: 'opcoes',
         opcoes: [['','—'],['regular','Regular'],['irregular','Irregular'],['ausente','Ausente'],['nao_se_aplica','Não se aplica']] },
-      { c: 'perfil.condicoes', r: 'Condições de saúde', s: 'o app silencia o que exige manejo clínico e encaminha', tipo: 'multi', opcoes: 'CONDICOES' }
+      { c: 'perfil.condicoes', r: 'Saúde física', s: 'o app silencia o que exige manejo clínico e encaminha', tipo: 'multi', opcoes: 'CONDICOES_FISICA' },
+      { c: 'perfil.condicoes', r: 'Saúde mental', s: 'a nutrição entra como apoio, nunca como tratamento', tipo: 'multi', opcoes: 'CONDICOES_MENTAL' }
     ]},
     { grupo: 'Exames', itens: [
       { c: 'exames.ferritina', r: 'Ferritina', tipo: 'medida', u: 'ng/mL' },
@@ -90,17 +91,24 @@
     { c:'exames.b12',       nome:'Vitamina B12', u:'pg/mL', min:0,   max:700, baixo:300, alvo:300 }
   ];
 
-  // Catálogo da triagem de condições. A chave casa com o que as regras
-  // 'condicao' testam em base-regras.js.
-  const CONDICOES = [
+  // Catálogo da triagem de condições, separado por saúde física e mental.
+  // As chaves casam com o que as regras 'condicao' testam em base-regras.js.
+  // Ambos os campos gravam no mesmo array perfil.condicoes.
+  const CONDICOES_FISICA = [
     ['diabetes', 'Diabetes'],
     ['doenca_renal', 'Doença renal'],
     ['hipertensao', 'Hipertensão'],
     ['dii', 'Doença inflamatória intestinal'],
     ['doenca_celiaca', 'Doença celíaca'],
-    ['transtorno_alimentar', 'Histórico de transtorno alimentar'],
     ['gravidez_amamentacao', 'Gravidez ou amamentação']
   ];
+  const CONDICOES_MENTAL = [
+    ['transtorno_alimentar', 'Histórico de transtorno alimentar'],
+    ['depressao', 'Depressão'],
+    ['ansiedade', 'Ansiedade'],
+    ['transtorno_bipolar', 'Transtorno bipolar']
+  ];
+  const CAT_MULTI = { CONDICOES_FISICA, CONDICOES_MENTAL };
 
   const ICONES_ST = {
     bom:     '<path d="M8 1a7 7 0 100 14A7 7 0 008 1z"/><path d="M4.6 8.1l2.2 2.2 4.3-4.3" fill="none" stroke="#1a1a19" stroke-width="1.8"/>',
@@ -452,7 +460,7 @@
       return `<div class="campo">${rot}<input type="text" data-c="${item.c}" value="${esc(v || '')}"></div>`;
     }
     if (item.tipo === 'multi') {
-      const ops = item.opcoes === 'CONDICOES' ? CONDICOES : item.opcoes;
+      const ops = typeof item.opcoes === 'string' ? (CAT_MULTI[item.opcoes] || []) : item.opcoes;
       const sel = ler(item.c) || [];
       const chips = ops.map(([k, r]) =>
         `<span class="chip ${sel.indexOf(k) !== -1 ? 'on' : ''}" data-multi="${item.c}" data-key="${esc(k)}">${esc(r)}</span>`).join('');
@@ -576,7 +584,7 @@
 
     html += `<div class="sec">Versão</div>
       <div class="aviso" style="font-size:12.5px;color:var(--ink-2)">
-        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v3</code><br>
+        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v4</code><br>
         Funciona offline. Para atualizar, feche e abra de novo com internet.
       </div>`;
 

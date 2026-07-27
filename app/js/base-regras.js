@@ -39,7 +39,7 @@ var BASE_REGRAS = [
     correcao: 'Ferro heme (carne vermelha magra, fígado uma vez por semana) absorve 15 a 35%. Fontes vegetais absorvem 2 a 10% — combine sempre com vitamina C na mesma refeição. Segure café, chá e leite por uma hora antes e depois. Priorize ferro pela manhã: a hepcidina sobe por 3 a 6 h após treino intenso e fecha a absorção intestinal.',
     encaminhar: 'Ferritina abaixo de 30 em atleta pede avaliação médica com hemograma, saturação de transferrina e PCR antes de qualquer suplementação. Ferro suplementado sem indicação é hepatotóxico.'
   },
-  fonte: 'ACSM/AND/DC Joint Position Stand 2016; Sim et al., Eur J Appl Physiol 2019 (hepcidina e exercício)',
+  fonte: 'Peeling et al., PLoS ONE 2014 (doi:10.1371/journal.pone.0093002); Borrione et al. 2011 (PMID 22023767); AND/DC/ACSM — Thomas, Erdman & Burke, J Acad Nutr Diet 2016;116:501-528. Verificado 2026-07.',
   revisadoEm: '2026-07',
   pedeDado: 'Cadastre sua ferritina mais recente para eu avaliar transporte de oxigênio.'
 },
@@ -54,9 +54,9 @@ var BASE_REGRAS = [
     titulo: 'Ferritina no limite inferior — dentro da referência, abaixo do ideal para endurance',
     mecanismo: 'A referência laboratorial comum considera deficiência abaixo de 15 a 30 ng/mL, porque foi construída para a população geral. Corredores perdem ferro por três vias somadas: hemólise de impacto na pisada, suor e microssangramento gastrointestinal.',
     noTreino: 'Nesta faixa você provavelmente não sente nada em rodagem, mas a reserva não sustenta um bloco de volume alto. É a faixa em que a queda aparece seis semanas depois, já como perda de pace no limiar.',
-    correcao: 'Manter ferro heme em duas refeições semanais, leguminosa com fonte de vitamina C nas demais, e repetir o exame em 90 dias para saber a direção da curva — o valor isolado importa menos que a trajetória.'
+    correcao: 'Manter ferro heme em duas refeições semanais, leguminosa com fonte de vitamina C nas demais, e repetir o exame em 90 dias para saber a direção da curva — o valor isolado importa menos que a trajetória. Ressalva honesta: não existe um corte único de ferritina acordado entre as diretrizes (as propostas vão de <10 a <35 ng/mL); alvos de 30-50 para endurance são recomendação prática, não consenso firme.'
   },
-  fonte: 'ACSM/AND/DC 2016; Peeling et al., Sports Med 2008',
+  fonte: 'AND/DC/ACSM — Thomas et al., J Acad Nutr Diet 2016;116:501-528 ("no agreement on the serum ferritin level... <10 to <35 ng/mL"). Verificado 2026-07: o alvo fixo >40 do app NÃO é endossado por diretriz.',
   revisadoEm: '2026-07'
 },
 {
@@ -127,7 +127,7 @@ var BASE_REGRAS = [
     correcao: 'Exposição solar de 15 a 20 minutos com braços e pernas descobertos, sardinha, gema de ovo.',
     encaminhar: 'Abaixo de 20 ng/mL há indicação de reposição orientada por médico, com dose e reavaliação definidas por ele.'
   },
-  fonte: 'Owens et al., Sports Med 2018; Endocrine Society Clinical Practice Guideline',
+  fonte: 'Endocrine Society — Holick et al., J Clin Endocrinol Metab 2011;96:1911-1930 (doi:10.1210/jc.2011-0385): deficiência = 25(OH)D < 20 ng/mL. Verificado 2026-07.',
   revisadoEm: '2026-07'
 },
 {
@@ -141,9 +141,9 @@ var BASE_REGRAS = [
     titulo: 'Vitamina D no limite inferior — insuficiente para atleta',
     mecanismo: 'Receptores de vitamina D existem no músculo esquelético e nas células de defesa das vias aéreas. A faixa alvo para atletas (40 a 60 ng/mL) é mais alta que a da população geral porque a demanda de remodelamento ósseo e de imunidade é maior.',
     noTreino: 'Abaixo de 30 ng/mL há perda mensurável de desempenho neuromuscular e maior incidência de infecção respiratória em blocos de volume alto. O osso responde pior à carga de impacto — terreno para fratura por estresse.',
-    correcao: 'Sol de 15 a 20 minutos por dia sem protetor nos braços, sardinha e gema de ovo na rotina. Reavaliar em 90 dias; se não subir com exposição solar, conversar com seu médico sobre reposição.'
+    correcao: 'Sol de 15 a 20 minutos por dia sem protetor nos braços, sardinha e gema de ovo na rotina. Reavaliar em 90 dias; se não subir com exposição solar, conversar com seu médico sobre reposição. Duas ressalvas honestas: (1) há divergência real de diretriz — a Endocrine Society chama 20-30 ng/mL de "insuficiência", mas o NIH já considera 20 ng/mL adequado; (2) não persiga níveis altos: o NIH sinaliza acima de 50 ng/mL como potencialmente prejudicial, então a parte alta do alvo "40-60" deve ser tratada com cautela.'
   },
-  fonte: 'Owens et al., Sports Med 2018; ACSM/AND/DC 2016',
+  fonte: 'Endocrine Society — Holick et al., J Clin Endocrinol Metab 2011;96:1911-1930; NIH ODS Vitamin D Fact Sheet (≥20 ng/mL adequado; >50 ng/mL potencialmente prejudicial). Verificado 2026-07: divergência de diretriz e limite superior de segurança.',
   revisadoEm: '2026-07'
 },
 
@@ -159,9 +159,9 @@ var BASE_REGRAS = [
     titulo: 'Vitamina B12 abaixo do ideal',
     mecanismo: 'Trabalha junto com o folato na eritropoiese — a formação de hemácias novas — e na manutenção da bainha de mielina.',
     noTreino: 'Fadiga que não melhora com descanso, formigamento em extremidades e, quando somada a ferro baixo, um gargalo duplo na produção de hemácias: falta o mineral e falta o cofator.',
-    correcao: 'Carnes, ovos, laticínios e peixes. Em dieta vegetariana estrita, a suplementação é obrigatória — não existe fonte vegetal confiável.'
+    correcao: 'Carnes, ovos, laticínios e peixes. Em dieta vegetariana estrita, a suplementação é obrigatória — não existe fonte vegetal confiável. Ressalva honesta: a ideia de que atletas precisam de B12 mais alta (400-700 pg/mL) vem de UM único estudo observacional em atletas de elite, não de consenso; a deficiência populacional fica por volta de 200 pg/mL. Trate "abaixo do ideal" como sinal para conversar com quem te acompanha, não como diagnóstico.'
   },
-  fonte: 'NIH ODS — Vitamin B12 Fact Sheet; ACSM/AND/DC 2016',
+  fonte: 'Krzywański et al., Nutrients 2020;12:1038 (PMC7230602) — faixa 400-700 pg/mL proposta em UM estudo de elite (não consenso); referência laboratorial de deficiência ~200 pg/mL. Verificado 2026-07.',
   revisadoEm: '2026-07'
 },
 {
@@ -175,9 +175,9 @@ var BASE_REGRAS = [
     titulo: 'Zinco adequado',
     mecanismo: 'Participa da síntese proteica, da produção de testosterona e da integridade da mucosa intestinal.',
     noTreino: 'Sustenta o reparo de microlesões e a barreira intestinal. Atenção em blocos de calor: as perdas pelo suor derrubam esse valor em poucas semanas.',
-    correcao: 'Manter carnes, sementes de abóbora, castanhas e leguminosas na rotina.'
+    correcao: 'Manter carnes, sementes de abóbora, castanhas e leguminosas na rotina. Nota: o corte de adequação difere por sexo — abaixo de 70 µg/dL em mulheres e 74 µg/dL em homens indica status inadequado (em coleta de jejum matinal). O zinco sérico é um biomarcador individual fraco; leia junto com a dieta.'
   },
-  fonte: 'NIH ODS — Zinc Fact Sheet',
+  fonte: 'NIH ODS — Zinc Fact Sheet (inadequado <70 µg/dL mulheres, <74 µg/dL homens); IZiNCG/BOND. Verificado 2026-07.',
   revisadoEm: '2026-07'
 },
 
@@ -197,7 +197,7 @@ var BASE_REGRAS = [
     correcao: 'Aumentar a oferta de energia, principalmente carboidrato, em todas as refeições. Nenhum ajuste de treino resolve isto, porque o problema não está no treino.',
     encaminhar: 'RED-S é quadro clínico. Vale conversar com médico do esporte e nutricionista — e não é caso de esperar para ver.'
   },
-  fonte: 'IOC Consensus Statement on RED-S, Br J Sports Med 2018 (atualizado 2023); Mountjoy et al.',
+  fonte: 'IOC — Mountjoy et al., Br J Sports Med 2018;52:687-697 (PMID 29771168) e REDs 2023;57:1073-1097 (doi:10.1136/bjsports-2023-106994); Loucks & Thuma, J Clin Endocrinol Metab 2003;88:297-311; AND/DC/ACSM 2016. Verificado 2026-07.',
   revisadoEm: '2026-07',
   pedeDado: 'Preciso da sua massa livre de gordura e do registro alimentar da semana para calcular disponibilidade energética.'
 },
@@ -214,7 +214,7 @@ var BASE_REGRAS = [
     noTreino: 'O treino "não rende o que deveria". Sessões cumpridas, curva de evolução estagnada. É a explicação mais comum para platô em atleta amador que treina certo.',
     correcao: 'Reforçar carboidrato nas refeições em volta do treino e adicionar uma refeição intermediária nos dias de sessão dupla.'
   },
-  fonte: 'IOC Consensus RED-S 2018; Loucks et al., J Sports Sci 2011',
+  fonte: 'AND/DC/ACSM — Thomas et al. 2016 (45 kcal/kg MLG = equilíbrio/ótimo; abaixo de 30 = prejuízos); IOC RED-S 2018/2023. Verificado 2026-07 (o rótulo "40-45 = adaptação plena" é paráfrase da faixa ótima).',
   revisadoEm: '2026-07'
 },
 
@@ -280,7 +280,7 @@ var BASE_REGRAS = [
     noTreino: 'A síntese proteica funciona por limiar, não por soma: são necessários cerca de 0,3 a 0,4 g/kg por refeição, o suficiente para entregar 2,5 g de leucina. Abaixo disso o estímulo simplesmente não dispara, mesmo que o total do dia esteja correto.',
     correcao: 'Para você, cerca de {{atleta.doseProteinaAlvo}} g por refeição, em quatro refeições espaçadas de 3 a 4 horas. Um ovo a mais, um copo de leite ou uma colher de whey fecham a conta.'
   },
-  fonte: 'ISSN Position Stand: Protein and Exercise, JISSN 2017; Moore et al., J Gerontol 2015',
+  fonte: 'ISSN — Jäger et al., J Int Soc Sports Nutr 2017;14:20 (doi:10.1186/s12970-017-0177-8): 0,25 g/kg ou 20-40 g por refeição, leucina 1-3 g. Verificado 2026-07.',
   revisadoEm: '2026-07'
 },
 {
@@ -295,7 +295,7 @@ var BASE_REGRAS = [
     noTreino: 'A faixa para atleta em treinamento é de 1,6 a 2,0 g/kg. Abaixo dela, o reparo das microlesões fica incompleto entre sessões: a dor muscular dura mais, a qualidade da sessão seguinte cai e a adaptação se acumula pela metade.',
     correcao: 'Distribuir em quatro refeições em vez de concentrar no jantar. Uma fonte proteica no café da manhã costuma ser a lacuna mais comum.'
   },
-  fonte: 'ISSN Position Stand: Protein and Exercise, JISSN 2017',
+  fonte: 'ISSN — Jäger et al., J Int Soc Sports Nutr 2017;14:20 (faixa 1,4-2,0 g/kg/dia; o piso 1,6 do app fica dentro dela). Verificado 2026-07.',
   revisadoEm: '2026-07'
 },
 {
@@ -527,7 +527,7 @@ var BASE_REGRAS = [
     noTreino: 'Com o avançar da idade surge a "resistência anabólica": o músculo responde menos ao mesmo estímulo de proteína. O limiar por refeição sobe de ~0,3 para cerca de 0,4 g/kg — abaixo disso, a síntese proteica não dispara com a mesma eficiência, e o reparo entre sessões fica incompleto.',
     correcao: 'Mire cerca de 0,4 g/kg por refeição, com fontes ricas em leucina (laticínios, ovos, carnes, whey). Distribuir em quatro refeições rende mais que concentrar no jantar.'
   },
-  fonte: 'Moore et al., J Gerontol A Biol Sci 2015; ISSN Position Stand 2017',
+  fonte: 'Morton et al., Br J Sports Med 2018; ISSN — Jäger et al. 2017 (~0,4 g/kg/refeição cobre variabilidade interindividual). Verificado 2026-07.',
   revisadoEm: '2026-07'
 },
 {
@@ -547,7 +547,7 @@ var BASE_REGRAS = [
     correcao: 'Aumentar a oferta de energia — principalmente carboidrato — em todas as refeições. Nenhum ajuste de treino corrige isto, porque a causa não está no treino.',
     encaminhar: 'Alteração menstrual associada a baixa energia disponível merece avaliação com médica(o) do esporte e ginecologista, e acompanhamento nutricional. Não é caso de esperar.'
   },
-  fonte: 'IOC Consensus RED-S 2018 (atualizado 2023); Mountjoy et al.; De Souza et al., Female Athlete Triad Coalition',
+  fonte: 'De Souza et al., 2014 Female Athlete Triad Coalition Consensus, Br J Sports Med 2014 (PMID 24463911); IOC RED-S — Mountjoy et al. 2018 (PMID 29771168). Verificado 2026-07.',
   revisadoEm: '2026-07'
 },
 

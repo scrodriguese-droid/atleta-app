@@ -40,14 +40,11 @@
       { c: 'exames.zinco',     r: 'Zinco',     tipo: 'nivel' },
       { c: 'exames.b12',       r: 'Vitamina B12', tipo: 'nivel' }
     ]},
-    { grupo: 'Hoje', itens: [
-      { c: 'hoje.tipoSessao', r: 'Sessão', tipo: 'opcoes',
+    { grupo: 'Hoje', nota: 'Só a sessão de hoje. Sua meta de carboidrato é calculada sozinha — pelo seu peso e pelo tipo de treino — e aparece na aba Combustível. Nada de contar gramas.', itens: [
+      { c: 'hoje.tipoSessao', r: 'Sessão de hoje', tipo: 'opcoes',
         opcoes: [['descanso','Descanso'],['leve','Leve'],['moderado','Moderado'],
                  ['intenso','Intenso'],['longo','Longo'],['forca','Força']] },
-      { c: 'hoje.duracaoPrevistaMin', r: 'Duração prevista', tipo: 'num', u: 'min' },
-      { c: 'hoje.carboMeta', r: 'Meta de carboidrato', tipo: 'num', u: 'g' },
-      { c: 'hoje.carboConsumido', r: 'Carboidrato até agora', tipo: 'num', u: 'g' },
-      { c: 'hoje.proteinaUltimaRefeicao', r: 'Proteína na última refeição', tipo: 'num', u: 'g' }
+      { c: 'hoje.duracaoPrevistaMin', r: 'Duração prevista', tipo: 'num', u: 'min' }
     ]},
     { grupo: 'Semana', itens: [
       { c: 'semana.ea', r: 'Disponibilidade energética', s: 'kcal por kg de MLG', tipo: 'num' },
@@ -91,6 +88,11 @@
   ];
   const NIVEIS = ['Abaixo da média', 'No limite inferior', 'Na média', 'No limite superior', 'Acima da média'];
   const statusNivel = n => n === 0 ? 'critico' : n === 1 ? 'atencao' : 'bom';
+
+  // Carboidrato por tipo de sessão, em g/kg/dia (faixas de nutrição esportiva,
+  // Burke et al. / IOC). Usado para DERIVAR a meta do dia — o usuário não digita.
+  const CARBO_GKG = { descanso: 3.5, leve: 4.5, moderado: 6, intenso: 8, longo: 9, forca: 5 };
+  const NOMES_SESSAO = { descanso: 'descanso', leve: 'leve', moderado: 'moderado', intenso: 'intenso', longo: 'longo', forca: 'força' };
 
   // Catálogo da triagem de condições, separado por saúde física e mental.
   // As chaves casam com o que as regras 'condicao' testam em base-regras.js.
@@ -143,12 +145,16 @@
   }
 
   function derivar() {
-    const meta = num(estado.hoje.carboMeta) || 0;
-    const cons = num(estado.hoje.carboConsumido) || 0;
-    estado.hoje.carboRestante = Math.max(0, meta - cons);
-    if (num(estado.atleta.pesoKg)) {
-      estado.atleta.doseProteinaAlvo = Math.round(estado.atleta.pesoKg * 0.35);
-    }
+    // Meta de carboidrato é DERIVADA (peso × g/kg da sessão), não digitada.
+    const peso = num(estado.atleta.pesoKg);
+    const gkg = CARBO_GKG[estado.hoje.tipoSessao] || 5;
+    estado.hoje.carboMeta = peso ? Math.round(peso * gkg) : null;
+    estado.hoje.carboRestante = estado.hoje.carboMeta;
+    // Registro por refeição não é coletado (sem food logger). Manter nulo deixa
+    // as regras que dependem disso dormentes — voltam quando o registro existir.
+    estado.hoje.carboConsumido = null;
+    estado.hoje.proteinaUltimaRefeicao = null;
+    if (peso) estado.atleta.doseProteinaAlvo = Math.round(peso * 0.35);
   }
 
   /** Anel SVG de progresso (0–100) ou vazio se val for null. */
@@ -274,24 +280,18 @@
     const bloqueio = '<div class="vazio">Esta orientação está sob manejo da sua condição de saúde — o motivo e o encaminhamento estão no topo da aba <b>Hoje</b>.</div>';
     let html = '';
 
-    // Anel de carboidrato do dia
-    const meta = num(h.carboMeta), cons = num(h.carboConsumido);
+    // Meta de carboidrato do dia — derivada, mostrada como referência
+    const meta = num(h.carboMeta);
     if (gates.carboidrato) {
       html += bloqueio;
     } else if (meta) {
-      const pct = cons != null ? Math.round(cons / meta * 100) : 0;
-      html += `<div class="hero"><div class="hero-row">
-        ${anel(cons != null ? Math.min(100, pct) : null, 'DA META')}
-        <div class="hero-copy">
-          <div class="lab">Carboidrato de hoje</div>
-          <div class="big">${cons != null ? fmt(cons) : '0'} de ${fmt(meta)} g</div>
-          <div class="txt">${cons != null && cons < meta
-            ? `Faltam <b>${fmt(meta - cons)} g</b> até o fim do dia. Glicogênio é o que decide se o último esforço sai no ritmo.`
-            : 'Meta do dia definida na aba Dados, conforme o tipo de sessão.'}</div>
-        </div>
+      html += `<div class="hero"><div class="hero-copy" style="width:100%">
+        <div class="lab">Combustível de hoje</div>
+        <div class="big">Meta: cerca de ${fmt(meta)} g de carboidrato</div>
+        <div class="txt">Calculada pelo seu peso (${fmt(num(at.pesoKg))} kg) e pela sessão de hoje (${NOMES_SESSAO[h.tipoSessao] || h.tipoSessao}). É referência para distribuir nas refeições em volta do treino — não algo para contar grama a grama. Glicogênio é o que decide se o último esforço sai no ritmo.</div>
       </div></div>`;
     } else {
-      html += '<div class="vazio">Defina a <b>meta de carboidrato</b> e o tipo de sessão na aba Dados para ver o painel de combustível.</div>';
+      html += '<div class="vazio">Informe seu <b>peso</b> e o <b>tipo de sessão</b> na aba Dados para eu calcular sua meta de carboidrato do dia.</div>';
     }
 
     // Distribuição-alvo de macros (derivada do peso — rótulo honesto: são metas)
@@ -630,7 +630,7 @@
 
     html += `<div class="sec">Versão</div>
       <div class="aviso" style="font-size:12.5px;color:var(--ink-2)">
-        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v6</code><br>
+        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v7</code><br>
         Funciona offline. Para atualizar, feche e abra de novo com internet.
       </div>`;
 

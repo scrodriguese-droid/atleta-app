@@ -419,13 +419,14 @@
     // Recuperação
     const acwr = num(rec.acwr);
     if (acwr != null) {
-      const st = acwr > 1.5 ? 'serio' : acwr < 0.8 ? 'atencao' : 'bom';
+      const salto = acwr > 1.5;
+      const st = salto ? 'atencao' : acwr < 0.8 ? 'atencao' : 'bom';
       html += `<div class="sec">Carga e recuperação</div>
         <div class="card">
-          <div class="card-t"><span>Razão aguda:crônica</span>${pilula(st, st === 'bom' ? 'Faixa segura' : 'Fora da faixa')}</div>
+          <div class="card-t"><span>Razão aguda:crônica</span>${pilula(st, salto ? 'Salto de carga' : acwr < 0.8 ? 'Semana leve' : 'Estável')}</div>
           <div class="meter"><i class="${st}" style="width:${Math.min(100, acwr/2*100).toFixed(0)}%"></i><span class="ref" style="left:65%"></span></div>
-          <div class="mrange"><span>0,5</span><span>faixa 0,8–1,3</span><span>2,0</span></div>
-          <div class="note">Progressão sustentável fica entre 0,8 e 1,3. Este é um indicador com ressalvas na literatura recente — trate como sinal, não veredito.</div>
+          <div class="mrange"><span>0,5</span><span>~1,0 = estável</span><span>2,0</span></div>
+          <div class="note">Ressalva honesta: o modelo aguda:crônica foi contestado pela literatura recente e <b>não prediz lesão</b> (Impellizzeri 2020, Lolli 2019). Serve, no máximo, como lembrete de subir carga aos poucos — não é veredito.</div>
         </div>`;
     }
 
@@ -630,7 +631,7 @@
 
     html += `<div class="sec">Versão</div>
       <div class="aviso" style="font-size:12.5px;color:var(--ink-2)">
-        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v7</code><br>
+        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v8</code><br>
         Funciona offline. Para atualizar, feche e abra de novo com internet.
       </div>`;
 

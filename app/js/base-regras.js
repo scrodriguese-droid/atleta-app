@@ -464,16 +464,16 @@ var BASE_REGRAS = [
 {
   id: 'acwr-alto',
   categoria: 'carga',
-  severidade: 'serio',
-  prioridade: 78,
+  severidade: 'info',
+  prioridade: 40,
   requer: ['recuperacao.acwr'],
   quando: e => e.recuperacao.acwr > 1.5,
   conteudo: {
-    titulo: 'Razão aguda:crônica em {{recuperacao.acwr}}',
-    noTreino: 'A carga desta semana está muito acima do que seu corpo vinha absorvendo. Acima de 1,5 a incidência de lesão sobe de forma consistente na literatura — e o ganho de adaptação não acompanha, porque adaptação depende de recuperação completa entre estímulos.',
-    correcao: 'Segurar o volume por 7 a 10 dias e reforçar carboidrato e proteína neste período. Progressão sustentável fica entre 0,8 e 1,3.'
+    titulo: 'Sua carga desta semana deu um salto em relação à média recente',
+    noTreino: 'A razão aguda:crônica está acima de 1,5 — esta semana ficou bem acima do que você vinha absorvendo. Ressalva importante e honesta: o modelo "aguda:crônica > 1,5 = risco de lesão" foi derrubado pela literatura recente (acoplamento matemático e correlação espúria; a causalidade nunca foi demonstrada). NÃO trate esse número como preditor de lesão nem como veredito.',
+    correcao: 'O que continua fazendo sentido é o princípio simples por trás dele: subir carga aos poucos. Se o salto foi grande e não planejado, uma semana mais estável antes de progredir de novo é razoável — por prudência geral, não porque o índice "mandou".'
   },
-  fonte: 'Gabbett, Br J Sports Med 2016; Hulin et al., Br J Sports Med 2016',
+  fonte: 'Verificado 2026-07: crítica de consenso — Impellizzeri et al., Sports Medicine 2020 (doi:10.1007/s40279-020-01280-1) e Int J Sports Physiol Perform 2020;15:907-913; Lolli et al., Br J Sports Med 2019;53:921-922. O ACWR NÃO é preditor validado de lesão.',
   revisadoEm: '2026-07'
 },
 {
@@ -567,7 +567,7 @@ var BASE_REGRAS = [
     noTreino: 'As recomendações padrão deste app para atleta — proteína alta (1,6–2,0 g/kg) e reposição generosa de sódio no suor — podem ser prejudiciais na doença renal, onde proteína, sódio e potássio precisam de controle individual. Por isso não mostro essas metas para você.',
     encaminhar: 'A sua meta de proteína e de eletrólitos deve ser definida pela(o) nefrologista e por nutricionista, considerando o seu estágio de função renal. Leve a eles a sua rotina de treino e suor.'
   },
-  fonte: 'Regra de segurança: silencia orientação que exige manejo clínico (referência: manejo nutricional em DRC). Não substitui avaliação médica.',
+  fonte: 'Verificado 2026-07: KDOQI 2020 (Ikizler et al., Am J Kidney Dis 2020;76:S1-S107) — proteína restrita a 0,55-0,60 g/kg/dia (sem diabetes, grau 1A) ou 0,6-0,8 (com diabetes), e sódio <2,3 g/dia; a meta atlética de 1,6-2,0 g/kg é ~3x isso. Em diálise as metas mudam — mais um motivo para individualizar com a equipe.',
   revisadoEm: '2026-07'
 },
 {
@@ -692,7 +692,7 @@ var BASE_REGRAS = [
     noTreino: 'Se você usa lítio, o equilíbrio de sódio e de líquidos afeta diretamente o nível de lítio no sangue: suar muito, repor sódio de forma agressiva ou mudar bruscamente a hidratação pode elevar o lítio a níveis tóxicos ou reduzi-lo demais. Por isso silenciei a orientação de sódio e hidratação para você. Além disso, sono e rotina são pilares da estabilidade no transtorno bipolar, e blocos de treino intenso mexem nos dois — vale acompanhar de perto.',
     encaminhar: 'Defina hidratação, sódio e carga de treino junto da(o) psiquiatra, sobretudo se usa lítio (que exige monitoração do nível sérico). Nunca ajuste medicação por causa deste app. Em crise, o CVV atende no 188.'
   },
-  fonte: 'Regra de segurança: sódio e hidratação alteram a litemia; sono/rotina afetam estabilidade. Não substitui avaliação médica.',
+  fonte: 'Verificado 2026-07: Jefferson et al., Am J Psychiatry 1982 (PMID 6816076); bula FDA do carbonato de lítio ("não mude o sal da dieta por conta própria"); Maiti et al., Bipolar Disorders 2023 (RCT NaCl, PMC10405685). Direção do risco imprevisível — por isso silenciar e encaminhar é a conduta segura.',
   revisadoEm: '2026-07'
 },
 {
@@ -707,7 +707,7 @@ var BASE_REGRAS = [
     noTreino: 'Os estimulantes usados no TDAH (metilfenidato, lisdexanfetamina e afins) costumam suprimir o apetite, sobretudo ao longo do dia. Para quem treina, isso é um risco concreto: dá para comer de menos sem sentir fome e derrubar a energia disponível — exatamente o que este app protege. A saída prática é comer por horário, não por fome: refeições e lanches marcados, aproveitando as janelas em que o efeito do remédio diminui (fim de tarde e noite). Vale saber ainda que estimulantes elevam a frequência cardíaca — sua FC de repouso e sua VFC podem vir alteradas pela medicação, não pelo treino.',
     encaminhar: 'Alinhe a medicação e o horário das refeições em torno dela com quem prescreve (psiquiatra ou neurologista) e, de preferência, com nutricionista. Nunca ajuste a medicação por causa deste app.'
   },
-  fonte: 'Regra de apoio e segurança: estimulantes suprimem apetite (risco de baixa energia disponível) e elevam a frequência cardíaca. Não substitui avaliação médica.',
+  fonte: 'Verificado 2026-07: bula FDA do Vyvanse (lisdexanfetamina) — apetite diminuído em ~39% e perda de peso mensurável; estimulantes elevam FC ~3-6 bpm e PA ~2-4 mmHg (Liang et al., Int J Environ Res Public Health 2018, PMID 30127314; bula FDA metilfenidato).',
   revisadoEm: '2026-07'
 },
 {

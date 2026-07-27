@@ -187,32 +187,31 @@ var BASE_REGRAS = [
   categoria: 'energia',
   severidade: 'critico',
   prioridade: 99,
-  requer: ['semana.ea'],
-  quando: e => e.semana.ea < 30,
+  requer: ['semana.eaRisco'],
+  quando: e => e.semana.eaRisco === 2,
   suprime: ['ea-atencao', 'carbo-deficit'],
   conteudo: {
-    titulo: 'Disponibilidade energética em {{semana.ea}} kcal/kg de massa livre de gordura',
-    mecanismo: 'Disponibilidade energética é o que sobra para o organismo funcionar depois de descontado o gasto do treino. Abaixo de 30 kcal/kg de MLG o corpo entra em economia: caem hormônios tireoidianos e sexuais, cai a densidade óssea, cai a imunidade e cai a síntese proteica. É a síndrome RED-S.',
+    titulo: 'Vários sinais de que você pode não estar comendo o suficiente',
+    mecanismo: 'Você marcou vários sinais associados a baixa disponibilidade energética — a energia que sobra para o organismo funcionar depois do gasto do treino. Quando ela fica baixa, o corpo entra em economia: caem hormônios tireoidianos e sexuais, cai a densidade óssea, cai a imunidade e cai a síntese proteica. É a síndrome RED-S. Isto é um rastreio por sinais, não uma medida de kcal — mas o conjunto pede atenção.',
     noTreino: 'O resultado é sempre o mesmo: menos adaptação para o mesmo treino. Você continua treinando e para de evoluir — e o risco de fratura por estresse e de infecção sobe junto.',
     correcao: 'Aumentar a oferta de energia, principalmente carboidrato, em todas as refeições. Nenhum ajuste de treino resolve isto, porque o problema não está no treino.',
     encaminhar: 'RED-S é quadro clínico. Vale conversar com médico do esporte e nutricionista — e não é caso de esperar para ver.'
   },
-  fonte: 'IOC — Mountjoy et al., Br J Sports Med 2018;52:687-697 (PMID 29771168) e REDs 2023;57:1073-1097 (doi:10.1136/bjsports-2023-106994); Loucks & Thuma, J Clin Endocrinol Metab 2003;88:297-311; AND/DC/ACSM 2016. Verificado 2026-07.',
-  revisadoEm: '2026-07',
-  pedeDado: 'Preciso da sua massa livre de gordura e do registro alimentar da semana para calcular disponibilidade energética.'
+  fonte: 'IOC — Mountjoy et al., Br J Sports Med 2018;52:687-697 (PMID 29771168) e REDs 2023;57:1073-1097 (doi:10.1136/bjsports-2023-106994); rastreio por sinais inspirado no LEAF-Q / RED-S CAT. Verificado 2026-07.',
+  revisadoEm: '2026-07'
 },
 {
   id: 'ea-atencao',
   categoria: 'energia',
   severidade: 'serio',
   prioridade: 75,
-  requer: ['semana.ea'],
-  quando: e => e.semana.ea >= 30 && e.semana.ea < 38,
+  requer: ['semana.eaRisco'],
+  quando: e => e.semana.eaRisco === 1,
   conteudo: {
-    titulo: 'Disponibilidade energética em {{semana.ea}} — zona cinzenta',
-    mecanismo: 'Acima do limiar de 30, mas abaixo dos 40 a 45 kcal/kg de MLG associados a adaptação plena. Nesta faixa o organismo funciona, mas prioriza manutenção em vez de adaptação.',
-    noTreino: 'O treino "não rende o que deveria". Sessões cumpridas, curva de evolução estagnada. É a explicação mais comum para platô em atleta amador que treina certo.',
-    correcao: 'Reforçar carboidrato nas refeições em volta do treino e adicionar uma refeição intermediária nos dias de sessão dupla.'
+    titulo: 'Alguns sinais de energia baixa — vale ficar de olho',
+    mecanismo: 'Você marcou um ou dois sinais que podem indicar que a energia disponível — o que sobra depois do gasto do treino — está na zona cinzenta: o suficiente para funcionar, mas não para adaptar plenamente. É um rastreio, não um diagnóstico.',
+    noTreino: 'Nessa faixa o treino "não rende o que deveria": sessões cumpridas, curva de evolução estagnada. É a explicação mais comum para platô em atleta amador que treina certo.',
+    correcao: 'Reforçar carboidrato nas refeições em volta do treino e adicionar uma refeição intermediária nos dias de sessão dupla. Se os sinais persistirem ou aumentarem, vale conversar com nutricionista.'
   },
   fonte: 'AND/DC/ACSM — Thomas et al. 2016 (45 kcal/kg MLG = equilíbrio/ótimo; abaixo de 30 = prejuízos); IOC RED-S 2018/2023. Verificado 2026-07 (o rótulo "40-45 = adaptação plena" é paráfrase da faixa ótima).',
   revisadoEm: '2026-07'
@@ -481,14 +480,14 @@ var BASE_REGRAS = [
   categoria: 'sintese',
   severidade: 'bom',
   prioridade: 5,
-  requer: ['semana.ea', 'recuperacao.prontidao'],
-  quando: e => e.semana.ea >= 40 && e.recuperacao.prontidao >= 75,
+  requer: ['semana.eaRisco', 'recuperacao.prontidao'],
+  quando: e => e.semana.eaRisco === 0 && e.recuperacao.prontidao >= 75,
   conteudo: {
     titulo: 'Combustível e recuperação alinhados',
-    noTreino: 'Disponibilidade energética em {{semana.ea}} kcal/kg de MLG e prontidão em {{recuperacao.prontidao}}. É o cenário em que o treino planejado rende o que promete — dá para buscar a sessão inteira.',
+    noTreino: 'Nenhum sinal de energia baixa e prontidão em {{recuperacao.prontidao}}. É o cenário em que o treino planejado rende o que promete — dá para buscar a sessão inteira.',
     correcao: 'Manter o que está sendo feito. Estabilidade por semanas seguidas é o que move a curva de VO₂ máx.'
   },
-  fonte: 'IOC Consensus RED-S 2018',
+  fonte: 'IOC — Mountjoy et al., Br J Sports Med 2018 (PMID 29771168). Verificado 2026-07.',
   revisadoEm: '2026-07'
 },
 
@@ -535,14 +534,13 @@ var BASE_REGRAS = [
   categoria: 'energia',
   severidade: 'critico',
   prioridade: 96,
-  requer: ['semana.ea'],
+  requer: ['perfil.menstruacao'],
   quando: e => e.perfil && e.perfil.sexo === 'feminino' &&
-               ['irregular','ausente'].indexOf(e.perfil.menstruacao) !== -1 &&
-               e.semana.ea < 45,
-  suprime: ['ea-atencao'],
+               ['irregular','ausente'].indexOf(e.perfil.menstruacao) !== -1,
+  suprime: ['ea-atencao', 'ea-critica'],
   conteudo: {
-    titulo: 'Ciclo alterado + energia disponível em {{semana.ea}} — sinal da tríade da atleta',
-    mecanismo: 'Irregularidade ou ausência de menstruação combinada com baixa disponibilidade energética é a assinatura da tríade da atleta feminina (parte do RED-S): baixa EA → disfunção menstrual → perda de densidade óssea. A alteração do ciclo não é "efeito do treino puxado" — é um sinal de que o corpo cortou funções por falta de combustível.',
+    titulo: 'Ciclo menstrual alterado — um sinal que merece atenção',
+    mecanismo: 'Irregularidade ou ausência de menstruação numa atleta é a assinatura da tríade da atleta feminina (parte do RED-S): baixa disponibilidade energética → disfunção menstrual → perda de densidade óssea. A alteração do ciclo muitas vezes não é "efeito do treino puxado" — é um sinal de que o corpo pode ter cortado funções por falta de combustível.',
     noTreino: 'Além da queda de desempenho e adaptação, o risco concreto é ósseo: menor densidade e mais fraturas por estresse. É um dos poucos sinais que pedem ação sem esperar para ver.',
     correcao: 'Aumentar a oferta de energia — principalmente carboidrato — em todas as refeições. Nenhum ajuste de treino corrige isto, porque a causa não está no treino.',
     encaminhar: 'Alteração menstrual associada a baixa energia disponível merece avaliação com médica(o) do esporte e ginecologista, e acompanhamento nutricional. Não é caso de esperar.'

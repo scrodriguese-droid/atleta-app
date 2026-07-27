@@ -46,23 +46,21 @@
                  ['intenso','Intenso'],['longo','Longo'],['forca','Força']] },
       { c: 'hoje.duracaoPrevistaMin', r: 'Duração prevista', tipo: 'num', u: 'min' }
     ]},
-    { grupo: 'Semana', itens: [
-      { c: 'semana.ea', r: 'Disponibilidade energética', s: 'kcal por kg de MLG', tipo: 'num' },
-      { c: 'semana.proteinaGkgMedia', r: 'Proteína média', tipo: 'num', u: 'g/kg', passo: 0.1 },
-      { c: 'semana.gorduraGkgMedia', r: 'Gordura média', tipo: 'num', u: 'g/kg', passo: 0.1 },
-      { c: 'semana.fibraMediaG', r: 'Fibra média', tipo: 'num', u: 'g/dia' },
-      { c: 'semana.plantasDistintas', r: 'Plantas distintas', s: 'meta: 30 por semana', tipo: 'num' },
+    { grupo: 'Sua semana', nota: 'Coisas que você responde de cabeça — sem contar gramas.', itens: [
+      { c: 'semana.sonoMedioH', r: 'Sono médio por noite', tipo: 'num', u: 'h', passo: 0.1 },
+      { c: 'semana.plantasDistintas', r: 'Plantas diferentes na semana', s: 'meta: 30', tipo: 'num' },
       { c: 'semana.fermentadosDias', r: 'Dias com fermentados', tipo: 'num' },
-      { c: 'semana.sintomasGI', r: 'Episódios de desconforto GI', tipo: 'num' },
-      { c: 'semana.caibras', r: 'Episódios de cãibra', tipo: 'num' },
-      { c: 'semana.sonoMedioH', r: 'Sono médio', tipo: 'num', u: 'h', passo: 0.1 }
+      { c: 'semana.sintomasGI', r: 'Desconforto intestinal em treino (nº)', tipo: 'num' },
+      { c: 'semana.caibras', r: 'Cãibras na semana (nº)', tipo: 'num' }
     ]},
-    { grupo: 'Recuperação', itens: [
-      { c: 'recuperacao.prontidao', r: 'Prontidão', s: '0 a 100', tipo: 'num' },
+    { grupo: 'Sinais de energia', nota: 'Em vez de calcular calorias, marque o que se aplica a você. São os sinais que a medicina esportiva usa para rastrear se você pode não estar comendo o suficiente para o seu treino (RED-S). Nenhum marcado = bom sinal.', itens: [
+      { c: 'semana.sinaisEnergia', r: 'Marque o que sente', tipo: 'multi', opcoes: 'SINAIS_ENERGIA' }
+    ]},
+    { grupo: 'Se você usa relógio ou anel', nota: 'Opcional — só se você tem um wearable (Garmin, Whoop, Oura, Apple Watch). Deixe em branco se não usar.', itens: [
+      { c: 'recuperacao.prontidao', r: 'Prontidão / readiness', s: '0 a 100', tipo: 'num' },
       { c: 'recuperacao.vfc', r: 'VFC hoje', tipo: 'num', u: 'ms' },
       { c: 'recuperacao.vfcMedia7', r: 'VFC média de 7 dias', tipo: 'num', u: 'ms' },
-      { c: 'recuperacao.fcRepouso', r: 'FC de repouso', tipo: 'num', u: 'bpm' },
-      { c: 'recuperacao.acwr', r: 'Razão aguda:crônica', tipo: 'num', passo: 0.01 }
+      { c: 'recuperacao.fcRepouso', r: 'FC de repouso', tipo: 'num', u: 'bpm' }
     ]},
     { grupo: 'Suor', itens: [
       { c: 'suor.taxaLh', r: 'Taxa de suor', tipo: 'num', u: 'L/h', passo: 0.1 },
@@ -112,7 +110,18 @@
     ['transtorno_bipolar', 'Transtorno bipolar'],
     ['tdah', 'TDAH']
   ];
-  const CAT_MULTI = { CONDICOES_FISICA, CONDICOES_MENTAL };
+  // Triagem de baixa energia (RED-S) — sinais que a pessoa reconhece em si,
+  // no lugar de um número de kcal impossível de saber. Inspirado no LEAF-Q.
+  const SINAIS_ENERGIA = [
+    ['perda_peso', 'Perdi peso sem querer'],
+    ['frio', 'Sinto mais frio que o normal (mãos/pés gelados)'],
+    ['cansaco', 'Cansaço que não passa com descanso'],
+    ['infeccoes', 'Adoeci com frequência nos últimos meses'],
+    ['fratura', 'Tive fratura por estresse no último ano'],
+    ['restrinjo', 'Restrinjo comida ou pulo refeições de propósito']
+  ];
+
+  const CAT_MULTI = { CONDICOES_FISICA, CONDICOES_MENTAL, SINAIS_ENERGIA };
 
   const ICONES_ST = {
     bom:     '<path d="M8 1a7 7 0 100 14A7 7 0 008 1z"/><path d="M4.6 8.1l2.2 2.2 4.3-4.3" fill="none" stroke="#1a1a19" stroke-width="1.8"/>',
@@ -155,6 +164,12 @@
     estado.hoje.carboConsumido = null;
     estado.hoje.proteinaUltimaRefeicao = null;
     if (peso) estado.atleta.doseProteinaAlvo = Math.round(peso * 0.35);
+
+    // Risco de baixa energia (RED-S) derivado dos sinais + ciclo alterado.
+    const sinais = (estado.semana.sinaisEnergia || []).length;
+    const cicloAlterado = estado.perfil && ['irregular', 'ausente'].indexOf(estado.perfil.menstruacao) !== -1;
+    const score = sinais + (cicloAlterado ? 1 : 0);
+    estado.semana.eaRisco = score >= 3 ? 2 : score >= 1 ? 1 : 0;
   }
 
   /** Anel SVG de progresso (0–100) ou vazio se val for null. */
@@ -182,6 +197,13 @@
       <div class="v ${na ? 'na' : ''}">${na ? '—' : fmt(v)}${!na && u ? `<small>${esc(u)}</small>` : ''}</div>
       ${extra ? `<div class="d ${extra.cls || ''}">${esc(extra.txt)}</div>` : ''}
     </div>`;
+  }
+
+  const RISCO_TXT = ['Sem sinais', 'Alguns sinais', 'Vários sinais'];
+  function kpiTexto(l, txt) {
+    const na = !txt;
+    return `<div class="kpi"><div class="l">${esc(l)}</div>
+      <div class="v ${na ? 'na' : ''}" style="font-size:15px;line-height:1.25">${na ? '—' : esc(txt)}</div></div>`;
   }
 
   /** Medidor com faixa-alvo. Devolve {html, status}. Maior é melhor. */
@@ -236,10 +258,11 @@
       const d = rec.vfc - rec.vfcMedia7;
       deltaVfc = { txt: (d >= 0 ? '+' : '') + fmt(d) + ' vs. média de 7 dias', cls: d >= 0 ? 'up' : 'down' };
     }
+    const risco = num(sem.eaRisco);
     html += `<div class="kpis">
-      ${kpi('VFC (rMSSD)', num(rec.vfc), 'ms', deltaVfc)}
       ${kpi('Sono', num(sem.sonoMedioH), 'h')}
-      ${kpi('Energia disponível', num(sem.ea), 'kcal/kg')}
+      ${kpiTexto('Sinais de energia', risco == null ? null : RISCO_TXT[risco])}
+      ${kpi('VFC (rMSSD)', num(rec.vfc), 'ms', deltaVfc)}
       ${kpi('FC de repouso', num(rec.fcRepouso), 'bpm')}
     </div>`;
 
@@ -317,18 +340,18 @@
         </div>`;
     }
 
-    // Disponibilidade energética
-    const ea = num(sem.ea);
-    if (ea != null && !gates.energia) {
-      const st = ea >= 40 ? 'bom' : ea >= 30 ? 'atencao' : 'critico';
-      const pct = Math.max(2, Math.min(100, ea / 50 * 100));
-      html += `<div class="sec">Disponibilidade energética</div>
+    // Sinais de energia (rastreio RED-S) — qualitativo, não kcal
+    const risco = num(sem.eaRisco);
+    if (risco != null && !gates.energia) {
+      const st = risco === 0 ? 'bom' : risco === 1 ? 'atencao' : 'critico';
+      const rot = risco === 0 ? 'Sem sinais de alerta' : risco === 1 ? 'Alguns sinais' : 'Vários sinais';
+      const seg = [0, 1, 2].map(i => `<i class="${i === risco ? 'on ' + st : ''}"></i>`).join('');
+      html += `<div class="sec">Sinais de energia (RED-S)</div>
         <div class="card">
-          <div class="card-t"><span>Energia disponível (EA)</span>
-            ${pilula(st, ea >= 40 ? 'Adequada' : ea >= 30 ? 'Zona cinzenta' : 'Baixa')}</div>
-          <div class="meter"><i class="${st}" style="width:${pct.toFixed(0)}%"></i><span class="ref" style="left:60%"></span></div>
-          <div class="mrange"><span>0</span><span>limiar 30</span><span>50 kcal/kg MLG</span></div>
-          <div class="note">Abaixo de 30 kcal/kg de massa livre de gordura o corpo entra em economia (RED-S). É o indicador que este app protege — comer menos nunca é a alavanca de performance.</div>
+          <div class="card-t"><span>Rastreio de baixa energia</span>${pilula(st, rot)}</div>
+          <div class="escala-view">${seg}</div>
+          <div class="escala-fim"><span>sem sinais</span><span>vários sinais</span></div>
+          <div class="note">Rastreio pelos sinais que você marca na aba Dados (perda de peso, frio, cansaço, infecções…), não uma medida de kcal. Comer menos nunca é a alavanca de performance.</div>
         </div>`;
     }
 
@@ -631,7 +654,7 @@
 
     html += `<div class="sec">Versão</div>
       <div class="aviso" style="font-size:12.5px;color:var(--ink-2)">
-        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v8</code><br>
+        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v9</code><br>
         Funciona offline. Para atualizar, feche e abra de novo com internet.
       </div>`;
 

@@ -10,7 +10,7 @@
    que instalaram.
    ========================================================================== */
 
-const VERSAO = 'atleta-v8';
+const VERSAO = 'atleta-v9';
 
 const CASCA = [
   './',

@@ -46,8 +46,9 @@ var Armazem = (function () {
       refeicaoTemFerroNaoHeme: false, refeicaoTemVitaminaC: false
     },
     semana: {
-      ea: null, proteinaGkgMedia: null, gorduraGkgMedia: null,
-      fibraMediaG: null, plantasDistintas: null, fermentadosDias: null,
+      sinaisEnergia: [],   // sinais de baixa energia (triagem RED-S)
+      eaRisco: null,       // derivado dos sinais: 0 baixo · 1 moderado · 2 alto
+      plantasDistintas: null, fermentadosDias: null,
       sintomasGI: 0, caibras: 0, sonoMedioH: null
     },
     recuperacao: {

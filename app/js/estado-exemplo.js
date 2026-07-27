@@ -55,10 +55,8 @@ var ESTADO_EXEMPLO = {
   },
 
   semana: {
-    ea: 41,                          // kcal/kg de massa livre de gordura
-    proteinaGkgMedia: 1.8,
-    gorduraGkgMedia: 1.1,
-    fibraMediaG: 24,
+    sinaisEnergia: ['cansaco'],      // sinais de baixa energia marcados
+    eaRisco: 1,                      // derivado (bancada não roda derivar)
     plantasDistintas: 19,
     fermentadosDias: 3,
     sintomasGI: 2,

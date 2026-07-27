@@ -696,6 +696,21 @@ var BASE_REGRAS = [
   revisadoEm: '2026-07'
 },
 {
+  id: 'cond-tdah',
+  categoria: 'condicao',
+  severidade: 'serio',
+  prioridade: 82,
+  requer: ['perfil.condicoes'],
+  quando: e => e.perfil && e.perfil.condicoes && e.perfil.condicoes.indexOf('tdah') !== -1,
+  conteudo: {
+    titulo: 'TDAH informado — atenção à fome mascarada pela medicação',
+    noTreino: 'Os estimulantes usados no TDAH (metilfenidato, lisdexanfetamina e afins) costumam suprimir o apetite, sobretudo ao longo do dia. Para quem treina, isso é um risco concreto: dá para comer de menos sem sentir fome e derrubar a energia disponível — exatamente o que este app protege. A saída prática é comer por horário, não por fome: refeições e lanches marcados, aproveitando as janelas em que o efeito do remédio diminui (fim de tarde e noite). Vale saber ainda que estimulantes elevam a frequência cardíaca — sua FC de repouso e sua VFC podem vir alteradas pela medicação, não pelo treino.',
+    encaminhar: 'Alinhe a medicação e o horário das refeições em torno dela com quem prescreve (psiquiatra ou neurologista) e, de preferência, com nutricionista. Nunca ajuste a medicação por causa deste app.'
+  },
+  fonte: 'Regra de apoio e segurança: estimulantes suprimem apetite (risco de baixa energia disponível) e elevam a frequência cardíaca. Não substitui avaliação médica.',
+  revisadoEm: '2026-07'
+},
+{
   id: 'cond-gravidez',
   categoria: 'condicao',
   severidade: 'serio',

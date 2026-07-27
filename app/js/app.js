@@ -106,7 +106,8 @@
     ['transtorno_alimentar', 'Histórico de transtorno alimentar'],
     ['depressao', 'Depressão'],
     ['ansiedade', 'Ansiedade'],
-    ['transtorno_bipolar', 'Transtorno bipolar']
+    ['transtorno_bipolar', 'Transtorno bipolar'],
+    ['tdah', 'TDAH']
   ];
   const CAT_MULTI = { CONDICOES_FISICA, CONDICOES_MENTAL };
 
@@ -584,7 +585,7 @@
 
     html += `<div class="sec">Versão</div>
       <div class="aviso" style="font-size:12.5px;color:var(--ink-2)">
-        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v4</code><br>
+        ${BASE_REGRAS.length} regras na base · casca <code>atleta-v5</code><br>
         Funciona offline. Para atualizar, feche e abra de novo com internet.
       </div>`;
 
